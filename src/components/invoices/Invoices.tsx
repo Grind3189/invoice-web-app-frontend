@@ -52,7 +52,7 @@ const Invoices = ({ theme }: InvoicesProp) => {
         <main className='main-container'>
             <section className='first-row'>
                 <div className="left-col">
-                    <h1>Invoices</h1>
+                   
                     <p className={`secondary-${theme}`}>Num of invoices</p>
                 </div>
                 <div className="right-col">
