@@ -25,7 +25,7 @@ const Invoices = ({ theme }: InvoicesProp) => {
     }
     const invoicesEl = invoiceDocu.map(invoice => {
         return (
-            <div className={`invoice-hero invoice-hero-${theme}`}>
+            <div key={invoice.id} className={`invoice-hero invoice-hero-${theme}`}>
                 <Link to='/'>
                     <div className="invoice-first-row">
                         <p className='invoice-id'>
