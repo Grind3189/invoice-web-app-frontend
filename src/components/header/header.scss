@@ -1,0 +1,42 @@
+@import '../../styles/mixins';
+
+header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    
+
+    &.header-light {
+        background-color: #373B53;
+    }
+    &.header-dark {
+        background-color: #1E2139;
+    }
+
+    .theme-icon {
+        margin-left: auto;
+        margin-right: 24px;
+        cursor: pointer;
+    }
+    .avatar-container {
+
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 24px;
+        border-left: 1px solid #494E6E;
+        img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+    }
+}
+
+@media screen and (min-width: 768px) {
+    header {
+        height: 80px;
+        
+    }
+}
