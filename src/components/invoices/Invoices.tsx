@@ -27,22 +27,16 @@ const Invoices = ({ theme }: InvoicesProp) => {
         return (
             <div key={invoice.id} className={`invoice-hero invoice-hero-${theme}`}>
                 <Link to='/'>
-                    <div className="invoice-first-row">
-                        <p className='invoice-id'>
-                            <span className={`hashtag-${theme}`}>#</span>
-                            {invoice.id}
-                        </p>
-                        <p className='name'>{invoice.clientName}</p>
-                    </div>
-                    <div className="invoice-second-row">
-                        <div className="left-col">
-                            <p className={`due-date due-date-${theme}`}>Due {invoice.paymentDue}</p>
-                            <p className='total'>₱ {invoice.total}</p>
-                        </div>
-                        <div className="status-container" style={getStatusStyle(invoice.status)}>
-                            <Dot status={invoice.status} />
-                            <p className='status'>{invoice.status}</p>
-                        </div>
+                    <p className='invoice-id'>
+                        <span className={`hashtag-${theme}`}>#</span>
+                        {invoice.id}
+                    </p>
+                    <p className={`due-date due-date-${theme}`}>Due {invoice.paymentDue}</p>
+                    <p className='name'>{invoice.clientName}</p>
+                    <p className='total'>₱ {invoice.total}</p>
+                    <div className="status-container" style={getStatusStyle(invoice.status)}>
+                        <Dot status={invoice.status} />
+                        <p className='status'>{invoice.status}</p>
                     </div>
                 </Link>
             </div>

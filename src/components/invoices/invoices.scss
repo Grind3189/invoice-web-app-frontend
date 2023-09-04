@@ -3,6 +3,7 @@
 
 .main-container {
     padding: 0 24px;
+
     .first-row {
         display: flex;
         justify-content: space-between;
@@ -80,7 +81,7 @@
         .invoice-hero {
             padding: 24px;
             border-radius: 8px;
-            height: 134px;
+            height: auto;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -98,72 +99,57 @@
                 color: inherit;
                 height: 100%;
 
-                .invoice-first-row {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    
+                .invoice-id {
+                    font-size: 15px;
+                    font-weight: 700;
+                    margin-top: 0;
 
-                    .invoice-id {
-                        font-size: 15px;
-                        font-weight: 700;
-                        margin-top: 0;
-
-                        .hashtag-light {
-                            color: #7E88C3;
-                        }
-
-                        .hashtag-dark {
-                            color: #7E88C3;
-                        }
+                    .hashtag-light {
+                        color: #7E88C3;
                     }
 
-                    .name {
-                        font-size: 13px;
-                        font-weight: 500;
-                        margin-top: 0;
+                    .hashtag-dark {
+                        color: #7E88C3;
                     }
                 }
 
-                .invoice-second-row {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
+                .name {
+                    font-size: 13px;
+                    font-weight: 500;
+                    margin-top: 0;
+                }
 
-                    .left-col {
+                .due-date {
+                    font-size: 13px;
+                    font-weight: 500;
 
-                        .due-date {
-                            font-size: 13px;
-                            font-weight: 500;
-
-                            &.due-date-light {
-                                color: $secondary-color-light;
-                            }
-
-                            &.due-date-dark {
-                                color: $secondary-color-dark;
-                            }
-                        }
-
-                        .total {
-                            font-size: 15px;
-                            font-weight: 700;
-                        }
+                    &.due-date-light {
+                        color: $secondary-color-light;
                     }
 
-                    .status-container {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 104px;
-                        height: 100%;
-                        gap: 8px;
-                        text-transform: capitalize;
-                        border-radius: 6px;
-                        p {
-                            font-weight: 700;
-                            font-size: 15px;
-                        }
+                    &.due-date-dark {
+                        color: $secondary-color-dark;
+                    }
+                }
+
+                .total {
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .status-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 104px;
+                    height: 100%;
+                    gap: 8px;
+                    text-transform: capitalize;
+                    border-radius: 6px;
+
+                    p {
+                        font-weight: 700;
+                        font-size: 15px;
                     }
                 }
 
@@ -175,6 +161,7 @@
 @media screen and (min-width: 768px) {
     .main-container {
         padding: 0 48px;
+
         .first-row {
             margin: 30px 0;
 
@@ -204,12 +191,10 @@
     .invoices-container {
 
         .invoice-hero {
-            
+
             a {
 
-                .invoice-first-row {
-                    
-                }
+                .invoice-first-row {}
             }
         }
     }
