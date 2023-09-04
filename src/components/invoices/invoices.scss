@@ -2,7 +2,6 @@
 @import '../../styles/mixins';
 
 .main-container {
-    padding: 0 24px;
 
     .first-row {
         display: flex;
@@ -174,7 +173,6 @@
 
 @media screen and (min-width: 768px) {
     .main-container {
-        padding: 0 48px;
 
         .first-row {
             margin: 30px 0;
@@ -223,8 +221,8 @@
 
                     .due-date {
                         margin: 0;
-                        width: 100px;
-                        margin-right: 51px;
+                        width: 105px;
+                        margin-right: 50px;
 
                     }
 
@@ -237,7 +235,7 @@
                     .total {
                         margin-left: auto;
                         margin-right: 40px;
-                        width: 10%;
+                        width: 15%;
                     }
 
                     .status-container {

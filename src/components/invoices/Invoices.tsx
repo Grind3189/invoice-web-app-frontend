@@ -1,17 +1,18 @@
 import arrowDowIc from '../../assets/icon-arrow-down.svg'
 import arrowRightIc from '../../assets/icon-arrow-right.svg'
 import plusIcon from '../../assets/icon-plus.svg'
-import data from '../../data.json'
 import Dot from '../dot/Dot'
 import { Link } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
 import './invoices.scss'
 import { useEffect, useState } from 'react'
+import { getStatusStyle } from '../../util'
 
 type InvoicesProp = {
     theme: string
+    data: InvoiceType[]
 }
-const Invoices = ({ theme }: InvoicesProp) => {
+const Invoices = ({ theme, data }: InvoicesProp) => {
     const invoiceDocu: InvoiceType[] = data
     const [width, setWidth] = useState<number>(window.innerWidth)
 
@@ -27,23 +28,11 @@ const Invoices = ({ theme }: InvoicesProp) => {
         }
     }, [])
 
-    const getStatusStyle = (status: string) => {
-        const style = {
-            backgroundColor: status === 'paid' ? 'rgba(51, 214, 159, 0.05)'
-                : status === 'pending' ? 'rgba(255, 143, 0, 0.05)'
-                    : '	rgb(223, 227, 250, .05)',
-            color: status === 'paid' ? '#33D69F'
-                : status === 'pending' ? '#FF8F00'
-                    : '#dfe3fa'
-        }
-        return style
-    }
-
 
     const invoicesEl = invoiceDocu.map(invoice => {
         return (
             <div key={invoice.id} className={`invoice-hero invoice-hero-${theme}`}>
-                <Link to='/'>
+                <Link to={`/${invoice.id}`}>
                     <p className='invoice-id'>
                         <span className={`hashtag-${theme}`}>#</span>
                         {invoice.id}
@@ -55,12 +44,11 @@ const Invoices = ({ theme }: InvoicesProp) => {
                         <Dot status={invoice.status} />
                         <p className='status'>{invoice.status}</p>
                     </div>
-                    <img src={arrowRightIc} alt='arrow right' />
+                    {width >= 768 && <img src={arrowRightIc} alt='arrow right' />}
                 </Link>
             </div>
         )
     })
-
 
     type wordsType = {
         totalInvoice: string,
@@ -75,7 +63,7 @@ const Invoices = ({ theme }: InvoicesProp) => {
     }
 
     return (
-        <main className='main-container'>
+        <main className='main-container padding-lr'>
             <section className='first-row'>
                 <div className="left-col">
                     <h1>Invoices</h1>
