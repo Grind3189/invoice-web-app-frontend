@@ -1,0 +1,14 @@
+.dark-gray-btn {
+    padding: 18px 24px;
+    
+   
+    &.dark {
+        background-color: #252945;
+        color: #DFE3FA;
+    }
+    &.light {
+        background-color: #F9FAFE;
+        color: #7E88C3;
+    }
+
+}
