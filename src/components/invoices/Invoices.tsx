@@ -2,7 +2,7 @@ import arrowDowIc from '../../assets/icon-arrow-down.svg'
 import arrowRightIc from '../../assets/icon-arrow-right.svg'
 import plusIcon from '../../assets/icon-plus.svg'
 import Dot from '../dot/Dot'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
 import './invoices.scss'
 import { useEffect, useState } from 'react'
@@ -14,8 +14,11 @@ type InvoicesProp = {
     data: InvoiceType[]
 }
 const Invoices = ({ theme, data }: InvoicesProp) => {
-    const invoiceDocu: InvoiceType[] = data
     const [width, setWidth] = useState<number>(window.innerWidth)
+    const [showFilterModal, setShowFilterModal] = useState<boolean>(false)
+    const location = useLocation()
+    const filterStatus = new URLSearchParams(location.search).get('status')
+    const invoiceDocu: InvoiceType[] = filterStatus ? data.filter(invoice => invoice.status === filterStatus) : data
 
     useEffect(() => {
         const getInnerWidth = () => {
@@ -28,6 +31,8 @@ const Invoices = ({ theme, data }: InvoicesProp) => {
             window.removeEventListener('resize', getInnerWidth)
         }
     }, [])
+
+    
 
 
     const invoicesEl = invoiceDocu.map(invoice => {
@@ -74,6 +79,18 @@ const Invoices = ({ theme, data }: InvoicesProp) => {
         newInvoice: width < 768 ? 'New' : 'New Invoice'
     }
 
+    const filterModalEl = (
+        <div className={`filter-modal ${showFilterModal && 'show'} ${theme}`}>
+            <Link to='?status=draft'>Draft</Link>
+            <div className={`hr-line ${theme}`} />
+            <Link to='?status=pending'>Pending</Link>
+            <div className={`hr-line ${theme}`} />
+            <Link to='?status=paid'>Paid</Link>
+            <div className={`hr-line ${theme}`} />
+            <Link to='.'>All</Link>
+        </div>
+    )
+
     return (
         <main className='main-container padding-lr'>
             <section className='first-row'>
@@ -82,9 +99,12 @@ const Invoices = ({ theme, data }: InvoicesProp) => {
                     <p className={`secondary-${theme}`}>{words.totalInvoice}</p>
                 </div>
                 <div className="right-col">
-                    <div className="dropdown-filter">
+                    <div className="dropdown-filter" onClick={() => setShowFilterModal(prev => !prev)}>
+                        <div className="filter-btn">
                         <p>{words.filter}</p>
-                        <img src={arrowDowIc} alt='arrow down icon' />
+                        <img src={arrowDowIc} alt='arrow down icon' className={showFilterModal ? 'arrow-down' : 'arrow-up'} />
+                        </div>
+                        {filterModalEl}
                     </div>
                     <button>
                         <img src={plusIcon} alt='Add icon' />
