@@ -6,16 +6,47 @@ import RedButton from '../buttons/red/RedButton'
 import PurpleButton from '../buttons/purple/PurpleButton'
 import Dot from '../dot/Dot'
 import './invoice.scss'
+import { useEffect, useState } from 'react'
 
 type InvoiceProp = {
   data: InvoiceType[],
   theme: string
 }
 const Invoice = ({ data, theme }: InvoiceProp) => {
+  const [width, setWidth] = useState<number>(window.innerWidth)
   const { invoiceId } = useParams()
   const filteredInvoice = data.filter(invoice => invoice.id === invoiceId)
   const invoiceInfo = filteredInvoice[0]
   console.log(invoiceInfo)
+
+  useEffect(() => {
+    const getWidth = () => {
+      setWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', getWidth)
+
+    return () => {
+      window.removeEventListener('resize', getWidth)
+    }
+
+  },[])
+
+
+  const btnStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '8px'
+  }
+
+  const invoiceBtnEl = (
+    <div className="invoice-buttons" style={btnStyle}>
+      <DarkGrayButton theme={theme}>Edit</DarkGrayButton>
+      <RedButton>Delete</RedButton>
+      <PurpleButton>Mark as Paid</PurpleButton>
+    </div>
+  )
 
   return (
     <>
@@ -26,6 +57,7 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
             <Dot status={invoiceInfo.status} />
             <p>{invoiceInfo.status}</p>
           </div>
+          {width >= 768 && invoiceBtnEl}
         </section>
 
         <section className={`invoice-info-container ${theme}`}>
@@ -68,17 +100,18 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
           </div>
 
           <div className={`item-desc-container ${theme}`}>
-
             <div className="item-info-container">
               {invoiceInfo.items.map((item, index) => {
                 return (
-                  <>
                     <div key={index} className="item-info">
-                      <div key={index} className="item-left-col">
+
+                      <div className="item-left-col">
+                        
                         <div className="name">
                           <p className={`item-label ${theme}`}>Item Name</p>
                           <h3>{item.name}</h3>
                         </div>
+
                         <div className="item-second-row">
                           <div className="qty">
                             <p className={`item-label ${theme}`}>QTY.</p>
@@ -89,13 +122,15 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
                             <p className={theme}>₱ {item.price.toFixed(2)}</p>
                           </div>
                         </div>
+
                       </div>
+
                       <div className="item-total">
                         <p className={`item-label ${theme}`}>Total</p>
                         <h3>₱ {item.total.toFixed(2)}</h3>
                       </div>
+
                     </div>
-                  </>
                 )
               })}
             </div>
@@ -109,11 +144,11 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
         </section>
 
       </main>
-      <section className={`invoice-btn-container padding-lr ${theme}`}>
-        <DarkGrayButton theme={theme}>Edit</DarkGrayButton>
-        <RedButton>Delete</RedButton>
-        <PurpleButton>Mark as Paid</PurpleButton>
-      </section>
+
+      {width < 768 && <section className={`invoice-btn-container padding-lr ${theme}`}>
+        {invoiceBtnEl}
+      </section>}
+
     </>
   )
 }

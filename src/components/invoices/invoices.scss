@@ -169,6 +169,41 @@
             }
         }
     }
+
+    .empty-container {
+        border: 1px solid red;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 70vh;
+        text-align: center;
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 42px;
+            margin-bottom: 23px;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 15px;
+
+            span {
+                font-weight: 700;
+            }
+
+            &.light {
+                color: $secondary-color-light;
+            }
+
+            &.dark {
+                color: $secondary-color-dark;
+            }
+        }
+    }
 }
 
 @media screen and (min-width: 768px) {
@@ -202,6 +237,7 @@
         }
 
         .invoices-container {
+
             .invoice-hero {
                 width: 100%;
                 max-width: unset;

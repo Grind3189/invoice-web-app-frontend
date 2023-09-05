@@ -3,6 +3,7 @@
 
 .invoice-container {
     margin-bottom: 56px;
+
     .invoice-status-container {
         margin-bottom: 16px;
         height: 91px;
@@ -197,17 +198,78 @@
 
 .invoice-btn-container {
     box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.10);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     height: 91px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     &.dark {
         background-color: #1E2139;
         box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.10);
     }
+
     &.light {
         background-color: #FFFFFF;
         box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     }
+}
+
+
+@media screen and (min-width: 768px) {
+    .invoice-container {
+        margin-bottom: 135px;
+
+        .invoice-status-container {
+            padding: 0 32px;
+            margin-bottom: 24px;
+            justify-content: center;
+            gap: 20px;
+
+            .invoice-status {
+                margin-right: auto;
+            }
+        }
+
+        .invoice-info-container {
+            padding: 32px;
+
+            .invoice-info {
+                grid-template: repeat(3, auto) / repeat(6, 1fr);
+                margin-bottom: 47px;
+
+                h3 {
+                    font-size: 15px;
+                }
+
+                .sender-address {
+                    grid-row: 1 / 2;
+                    grid-column: -2 / -1;
+                    text-align: right;
+                    font-size: 13px;
+                }
+
+                .invoice-date-container {
+                    grid-row: 2 / 3;
+                }
+
+                .payment-due-container {
+                    grid-row: -2 / -1;
+                }
+
+                .bill-to-container {
+                    grid-column: 3 / 4;
+                    grid-row: 2 / 4;
+                }
+
+                .sent-to-container {
+                    grid-row: 2 / 3;
+                    grid-column: -3 / -2;
+                }
+            }
+
+
+           
+        }
+    }
+
 }

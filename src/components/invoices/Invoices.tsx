@@ -7,6 +7,7 @@ import { InvoiceType } from '../../types/invoiceType'
 import './invoices.scss'
 import { useEffect, useState } from 'react'
 import { getStatusStyle } from '../../util'
+import emptyImage from '../../assets/illustration-empty.svg'
 
 type InvoicesProp = {
     theme: string
@@ -50,6 +51,17 @@ const Invoices = ({ theme, data }: InvoicesProp) => {
         )
     })
 
+
+    const emptyEl = (
+        <div className="empty-container">
+            <img src={emptyImage} alt='Illustration for empty data' />
+            <h1>There is nothing here</h1>
+            <p className={`${theme}`}>Create an invoice by clicking the <br />
+                <span>New</span> button and get started
+            </p>
+        </div>
+    )
+
     type wordsType = {
         totalInvoice: string,
         filter: string,
@@ -81,9 +93,13 @@ const Invoices = ({ theme, data }: InvoicesProp) => {
                 </div>
             </section>
 
-            <section className="invoices-container">
-                {invoicesEl}
-            </section>
+            {
+                invoicesEl.length ?
+                    <section className="invoices-container">
+                        {invoicesEl}
+                    </section>
+                    : emptyEl
+            }
 
         </main>
     )

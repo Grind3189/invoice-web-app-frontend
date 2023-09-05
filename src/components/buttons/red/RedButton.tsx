@@ -1,10 +1,10 @@
-import React from 'react'
 import { ButtonProp } from '../../../types/buttonType'
+import './redButton.scss'
 
 
 const RedButton = ({children} : ButtonProp) => {
   return (
-    <button>{children}</button>
+    <button className='red-btn btn-general'>{children}</button>
   )
 }
 
