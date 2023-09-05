@@ -1,3 +1,4 @@
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
 import { getStatusStyle } from '../../util'
@@ -30,7 +31,7 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
       window.removeEventListener('resize', getWidth)
     }
 
-  },[])
+  }, [])
 
 
   const btnStyle = {
@@ -100,37 +101,25 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
           </div>
 
           <div className={`item-desc-container ${theme}`}>
+
             <div className="item-info-container">
+              {width >= 768 &&
+                <>
+                  <p className={`label-name ${theme}`}>Item Name</p>
+                  <p className={`label-qty ${theme}`}>QTY.</p>
+                  <p className={`label-price ${theme}`}>Price</p>
+                  <p className={`label-total ${theme}`}>Total</p>
+                </>
+              }
+
               {invoiceInfo.items.map((item, index) => {
                 return (
-                    <div key={index} className="item-info">
-
-                      <div className="item-left-col">
-                        
-                        <div className="name">
-                          <p className={`item-label ${theme}`}>Item Name</p>
-                          <h3>{item.name}</h3>
-                        </div>
-
-                        <div className="item-second-row">
-                          <div className="qty">
-                            <p className={`item-label ${theme}`}>QTY.</p>
-                            <p className={theme}>{item.quantity} x</p>
-                          </div>
-                          <div className="item-price">
-                            <p className={`item-label ${theme}`}>Price</p>
-                            <p className={theme}>₱ {item.price.toFixed(2)}</p>
-                          </div>
-                        </div>
-
-                      </div>
-
-                      <div className="item-total">
-                        <p className={`item-label ${theme}`}>Total</p>
-                        <h3>₱ {item.total.toFixed(2)}</h3>
-                      </div>
-
-                    </div>
+                  <div key={index} className='item-info'>
+                    <h3 className='item-name'>{item.name}</h3>
+                    <p className={`item-qty ${theme}`}>{item.quantity}{width < 768 && 'x'}</p>
+                    <p className={`item-price ${theme}`}>₱ {item.price.toFixed(2)}</p>
+                    <h3 className='item-total'>₱ {item.total.toFixed(2)}</h3>
+                  </div>
                 )
               })}
             </div>
