@@ -2,7 +2,8 @@
 @import '../../styles/mixins';
 
 .main-container {
-
+    max-width: 780px;
+    
     .first-row {
         display: flex;
         justify-content: space-between;
@@ -285,4 +286,8 @@
         }
     }
 
+}
+
+@media screen and (min-width: 1440px) {
+    
 }

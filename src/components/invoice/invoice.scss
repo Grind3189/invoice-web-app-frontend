@@ -11,6 +11,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 0 24px;
+        
 
         &.light {
             @include light-invoice;
@@ -319,3 +320,5 @@
         }
     }
 }
+
+
