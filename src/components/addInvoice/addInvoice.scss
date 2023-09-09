@@ -1,0 +1,27 @@
+@import '../../styles/mixins';
+
+.add-invoice-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: unset;
+    z-index: 1;
+    opacity: 1;
+    border: 1px solid red;
+    overflow: auto;
+    transition: all 0.3s ease;
+
+    &.hide {
+       opacity: 0;
+       display: hidden;
+       transform: translateX(-100%);
+    }
+
+    &.dark { 
+        background-color: #141625;
+    }
+    &.light {
+        background-color: #FFF;
+    }
+}
