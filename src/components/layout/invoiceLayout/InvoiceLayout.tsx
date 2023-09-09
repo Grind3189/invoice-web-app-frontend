@@ -1,16 +1,14 @@
-import { Link, Outlet } from "react-router-dom"
-import arrowLeftIc from '../../../assets/icon-arrow-left.svg'
+import { Outlet } from "react-router-dom"
 import './invoiceLayout.scss'
+import { useLocation } from "react-router-dom"
+import Back from "../../buttons/back/Back"
 
 const InvoiceLayout = () => {
+    const location = useLocation().state
+    console.log(location)
     return (
-        <div className="invoice-layout">
-            <div className="goback-container padding-lr">
-                <Link to='..'>
-                    <img src={arrowLeftIc} alt="arrow left" />
-                    Go Back
-                </Link>
-            </div>
+        <div className="invoice-layout padding-lr">
+            <Back state={location}/>
             <Outlet />
         </div>
     )

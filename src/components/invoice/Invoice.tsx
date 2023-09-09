@@ -1,4 +1,3 @@
-import React from 'react'
 import { useParams } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
 import { getStatusStyle } from '../../util'
@@ -7,19 +6,20 @@ import RedButton from '../buttons/red/RedButton'
 import PurpleButton from '../buttons/purple/PurpleButton'
 import Dot from '../dot/Dot'
 import './invoice.scss'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
+import { Theme } from '../context/ThemeContext'
 
 type InvoiceProp = {
   data: InvoiceType[],
   theme: string
 }
-const Invoice = ({ data, theme }: InvoiceProp) => {
+const Invoice = ({ data }: InvoiceProp) => {
+  const {theme} = useContext(Theme)
   const [width, setWidth] = useState<number>(window.innerWidth)
   const { invoiceId } = useParams()
   const filteredInvoice = data.filter(invoice => invoice.id === invoiceId)
   const invoiceInfo = filteredInvoice[0]
-  console.log(invoiceInfo)
-
+ 
   useEffect(() => {
     const getWidth = () => {
       setWidth(window.innerWidth)
@@ -51,7 +51,7 @@ const Invoice = ({ data, theme }: InvoiceProp) => {
 
   return (
     <>
-      <main className='invoice-container padding-lr'>
+      <main className='invoice-container'>
         <section className={`invoice-status-container ${theme}`} >
           <p>Status</p>
           <div className="invoice-status" style={getStatusStyle(invoiceInfo.status)}>

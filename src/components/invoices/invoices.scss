@@ -3,6 +3,8 @@
 
 .main-container {
     max-width: 900px;
+    margin-bottom: 50px;
+    position: relative;
 
     .first-row {
         display: flex;
@@ -67,7 +69,12 @@
                     position: absolute;
                     display: flex;
                     flex-direction: column;
-                    width: 140px;
+                    justify-content: center;
+                    padding: 0 24px;
+                    gap: 17px;
+                    right: 0;
+                    width: 192px;
+                    height: 128px;
                     border-radius: 8px;
                     visibility: hidden;
                     z-index: 1;
@@ -91,27 +98,53 @@
                         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
                     }
 
-                    a {
-                        text-decoration: none;
-                        color: inherit;
-                        padding: 16px 0;
-                        margin-left: 24px;
-                        font-weight: 700;
-                        font-size: 15px;
-                    }
+                    .filter-status-container {
+                        display: flex;
+                        justify-content: flex-start;
+                        align-items: center;
+                        gap: 13px;
 
-                    .hr-line {
-                        height: 1px;
-                        border-top: 1px solid #DFE3FA;
+                        &.draft-container:hover .checkbox-placeholder {
+                            border: 1px solid var(--01, #7C5DFA);
 
-                        &.dark {
-                            border-top: 1px solid #252945;
                         }
 
-                        &.light {
-                            border-top: 1px solid #DFE3FA;
+                        &.pending-container:hover .checkbox-placeholder {
+                            border: 1px solid var(--01, #7C5DFA);
+
+                        }
+
+                        &.paid-container:hover .checkbox-placeholder {
+                            border: 1px solid var(--01, #7C5DFA);
+
+                        }
+
+                        .checkbox-placeholder {
+                            width: 16px;
+                            height: 16px;
+                            background: var(--05, #DFE3FA);
+                            border-radius: 2px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            
+
+                            &.active {
+                                background-color: #7C5DFA;
+                            }
+                        }
+
+                        input {
+                            display: none
+                        }
+
+                        label {
+                            font-weight: 700;
+                            font-size: 15px;
+                            cursor: pointer;
                         }
                     }
+
                 }
 
 
