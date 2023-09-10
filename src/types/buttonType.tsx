@@ -1,4 +1,3 @@
 export type ButtonProp = {
-    children: React.ReactNode,
-    theme?: string
+    children: React.ReactNode
 }

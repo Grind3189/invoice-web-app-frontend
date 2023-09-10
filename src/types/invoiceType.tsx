@@ -1,15 +1,15 @@
-interface AddressInterface {
+export interface AddressInterface {
     street: string,
     city: string,
     postCode: string,
     country: string
 }
 
-interface Items {
+export interface Items {
     name: string,
     quantity: number,
     price: number,
-    total: number
+    total: number | null
 }
 
 export type InvoiceType = {

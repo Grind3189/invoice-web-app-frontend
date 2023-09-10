@@ -1,15 +1,16 @@
+import './invoices.scss'
 import arrowDowIc from '../../assets/icon-arrow-down.svg'
 import arrowRightIc from '../../assets/icon-arrow-right.svg'
 import plusIcon from '../../assets/icon-plus.svg'
 import Dot from '../dot/Dot'
 import { Link, useLocation } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
-import './invoices.scss'
 import { useEffect, useState, useContext } from 'react'
 import { getStatusStyle } from '../../util'
 import emptyImage from '../../assets/illustration-empty.svg'
 import AddInvoice from '../addInvoice/AddInvoice'
 import { Theme } from '../context/ThemeContext'
+import useToggle from '../hooks/useToggle'
 
 type InvoicesProp = {
     data: InvoiceType[]
@@ -25,13 +26,14 @@ const Invoices = ({ data }: InvoicesProp) => {
     const {theme} = useContext(Theme)
     const location: StatusState = useLocation().state
     const [width, setWidth] = useState<number>(window.innerWidth)
-    const [showFilterModal, setShowFilterModal] = useState<boolean>(false)
+    const [showFilterModal, setShowFilterModal] = useToggle(false)
     const [status, setStatus] = useState<StatusState>(location ? location :{
         draft: false,
         pending: false,
         paid: false
     })
-    const [showCreate, setShowCreate] = useState<boolean>(false)
+
+    const [showCreate, toggleShowCreate] = useToggle(false)
 
     const invoiceDocu = data.filter(inv => {
         if (status.draft || status.paid || status.pending) {
@@ -181,7 +183,7 @@ const Invoices = ({ data }: InvoicesProp) => {
     
     return (
         <main className='main-container padding-lr'>
-            {<AddInvoice show={showCreate} />}
+            {<AddInvoice show={showCreate} toggleShow={toggleShowCreate} />}
             <section className='first-row'>
                 <div className="left-col">
                     <h1>Invoices</h1>
@@ -189,13 +191,13 @@ const Invoices = ({ data }: InvoicesProp) => {
                 </div>
                 <div className="right-col">
                     <div className="dropdown-filter">
-                        <div className="filter-btn" onClick={() => setShowFilterModal(prev => !prev)}>
+                        <div className="filter-btn" onClick={setShowFilterModal}>
                             <p>{words.filter}</p>
                             <img src={arrowDowIc} alt='arrow down icon' className={showFilterModal ? 'arrow-down' : 'arrow-up'} />
                         </div>
                         {filterModalEl}
                     </div>
-                    <button onClick={() => setShowCreate(prev => !prev)}>
+                    <button onClick={toggleShowCreate}>
                         <img src={plusIcon} alt='Add icon' />
                         <span>{words.newInvoice}</span>
                     </button>

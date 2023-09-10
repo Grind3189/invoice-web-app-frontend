@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
 import { getStatusStyle } from '../../util'
 import DarkGrayButton from '../buttons/darkGray/DarkGrayButton'
@@ -8,6 +8,9 @@ import Dot from '../dot/Dot'
 import './invoice.scss'
 import { useEffect, useState, useContext } from 'react'
 import { Theme } from '../context/ThemeContext'
+import ActionBtnContainer from '../../components/buttons/btnContainer/ActionBtnContainer'
+import Back from '../buttons/back/Back'
+
 
 type InvoiceProp = {
   data: InvoiceType[],
@@ -19,6 +22,7 @@ const Invoice = ({ data }: InvoiceProp) => {
   const { invoiceId } = useParams()
   const filteredInvoice = data.filter(invoice => invoice.id === invoiceId)
   const invoiceInfo = filteredInvoice[0]
+  const location = useLocation().state
  
   useEffect(() => {
     const getWidth = () => {
@@ -43,7 +47,7 @@ const Invoice = ({ data }: InvoiceProp) => {
 
   const invoiceBtnEl = (
     <div className="invoice-buttons" style={btnStyle}>
-      <DarkGrayButton theme={theme}>Edit</DarkGrayButton>
+      <DarkGrayButton>Edit</DarkGrayButton>
       <RedButton>Delete</RedButton>
       <PurpleButton>Mark as Paid</PurpleButton>
     </div>
@@ -51,7 +55,8 @@ const Invoice = ({ data }: InvoiceProp) => {
 
   return (
     <>
-      <main className='invoice-container'>
+      <main className='invoice-container padding-lr'>
+        <Back state={location} />
         <section className={`invoice-status-container ${theme}`} >
           <p>Status</p>
           <div className="invoice-status" style={getStatusStyle(invoiceInfo.status)}>
@@ -134,9 +139,9 @@ const Invoice = ({ data }: InvoiceProp) => {
 
       </main>
 
-      {width < 768 && <section className={`invoice-btn-container padding-lr ${theme}`}>
+      {width < 768 && <ActionBtnContainer>
         {invoiceBtnEl}
-      </section>}
+      </ActionBtnContainer>}
 
     </>
   )

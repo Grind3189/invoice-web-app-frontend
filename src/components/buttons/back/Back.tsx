@@ -4,12 +4,13 @@ import './back.scss'
 
 interface BackProp {
     path?: string,
-    state?: any
+    state?: any,
+    handleClick?: () => void
 }
-const Back = ({path = '..', state}: BackProp) => {
+const Back = ({path = '..', state, handleClick}: BackProp) => {
     return (
         <div className="goback-container">
-            <Link to={path} state={state}>
+            <Link to={path} state={state} onClick={handleClick}>
                 <img src={arrowLeftIc} alt="arrow left" />
                 Go Back
             </Link>

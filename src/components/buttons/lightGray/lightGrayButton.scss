@@ -1,0 +1,13 @@
+.light-gray-btn {
+    width: 73px;
+      
+    &.dark {
+        background: #373B53;
+        color: #DFE3FA;
+    }
+    &.light {
+        background: #373B53;
+        color: #888EB0;
+    }
+
+}

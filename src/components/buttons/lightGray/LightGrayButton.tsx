@@ -1,10 +1,17 @@
-import React from 'react'
-import { ButtonProp } from '../../../types/buttonType'
+import { useContext } from "react"
+import { Theme } from "../../context/ThemeContext"
+import "./lightGrayButton.scss"
 
-
-const LightGrayButton = ({children} : ButtonProp) => {
+type LightGrayButtonProp = {
+  children: React.ReactNode
+  styles?: React.CSSProperties
+}
+const LightGrayButton = ({ children, styles }: LightGrayButtonProp) => {
+  const { theme } = useContext(Theme)
   return (
-    <button>{children}</button>
+    <button className={`light-gray-btn ${theme} btn-general`} style={styles}>
+      {children}
+    </button>
   )
 }
 

@@ -1,4 +1,3 @@
-import InvoiceLayout from "./components/layout/invoiceLayout/InvoiceLayout"
 import Invoice from "./components/invoice/Invoice"
 import Invoices from "./components/invoices/Invoices"
 import { Theme } from "./components/context/ThemeContext"
@@ -17,9 +16,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout/>}>
         <Route index element={<Invoices data={invoiceData} />} />
-        <Route path=":invoiceId" element={<InvoiceLayout />}>
-          <Route index element={<Invoice data={invoiceData} theme={theme} />} />
-        </Route>
+        <Route path=":invoiceId" element={<Invoice data={invoiceData} theme={theme} />} />
       </Route>
     </Routes>
   )

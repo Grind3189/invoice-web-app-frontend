@@ -2,6 +2,9 @@
 @import '../../styles/colors';
 
 .invoice-container {
+    max-width: 900px;
+    margin-right: auto;
+    margin-left: auto;
     margin-bottom: 56px;
 
     .invoice-status-container {
