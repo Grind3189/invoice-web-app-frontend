@@ -1,0 +1,18 @@
+.action-btn-container {
+    box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.10);
+    height: 91px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+
+    &.dark {
+        background-color: #1E2139;
+        box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.10);
+    }
+
+    &.light {
+        background-color: #FFFFFF;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+}
