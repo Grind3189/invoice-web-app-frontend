@@ -3,19 +3,46 @@ import Invoices from "./components/invoices/Invoices"
 import { Theme } from "./components/context/ThemeContext"
 import Layout from "./components/layout/Layout"
 import { Routes, Route } from 'react-router-dom'
-import { useContext } from 'react'
-import invoiceData from './data.json'
+import { useContext, useState } from 'react'
+import { InvoiceType } from "./types/invoiceType"
+import { WidthContext } from "./components/context/WidthContext"
+import data from './data.json'
 
 
 function App() {
   const {theme} = useContext(Theme)
+  const [invoiceData, setInvoiceData] = useState(data)
+
+  const handleAddInvoice = (data: InvoiceType, status: string) => {
+    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+    let result = ''
+
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length)
+      result += characters.charAt(randomIndex)
+    }
+
+    const updatedData = {
+      ...data,
+      id: result,
+      status
+    }
+
+    console.log(updatedData)
+    setInvoiceData(prev => {
+      return [
+        ...prev,
+        updatedData
+      ]
+    })
+  }
 
   document.body.style.backgroundColor = theme === 'dark' ? '#141625' : '#F8F8FB'
   document.body.style.color = theme === 'dark' ? '#fff' : '#0C0E16'
   return (
     <Routes>
       <Route path="/" element={<Layout/>}>
-        <Route index element={<Invoices data={invoiceData} />} />
+        <Route index element={<WidthContext> <Invoices data={invoiceData} addInvoice={handleAddInvoice}/> </WidthContext>} />
         <Route path=":invoiceId" element={<Invoice data={invoiceData} theme={theme} />} />
       </Route>
     </Routes>

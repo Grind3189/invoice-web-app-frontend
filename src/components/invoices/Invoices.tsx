@@ -5,15 +5,17 @@ import plusIcon from '../../assets/icon-plus.svg'
 import Dot from '../dot/Dot'
 import { Link, useLocation } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
-import { useEffect, useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { getStatusStyle } from '../../util'
 import emptyImage from '../../assets/illustration-empty.svg'
 import AddInvoice from '../addInvoice/AddInvoice'
 import { Theme } from '../context/ThemeContext'
+import { Width } from '../context/WidthContext'
 import useToggle from '../hooks/useToggle'
 
 type InvoicesProp = {
-    data: InvoiceType[]
+    data: InvoiceType[],
+    addInvoice: (data: InvoiceType, status: string) => void
 }
 
 interface StatusState {
@@ -22,10 +24,10 @@ interface StatusState {
     paid: boolean
 }
 
-const Invoices = ({ data }: InvoicesProp) => {
+const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     const {theme} = useContext(Theme)
+    const {width} = useContext(Width)
     const location: StatusState = useLocation().state
-    const [width, setWidth] = useState<number>(window.innerWidth)
     const [showFilterModal, setShowFilterModal] = useToggle(false)
     const [status, setStatus] = useState<StatusState>(location ? location :{
         draft: false,
@@ -64,18 +66,6 @@ const Invoices = ({ data }: InvoicesProp) => {
         }
         return num
     }
-
-    useEffect(() => {
-        const getInnerWidth = () => {
-            setWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', getInnerWidth)
-
-        return () => {
-            window.removeEventListener('resize', getInnerWidth)
-        }
-    }, [])
 
     const invoicesEl = invoiceDocu.map(invoice => {
         return (
@@ -183,7 +173,7 @@ const Invoices = ({ data }: InvoicesProp) => {
     
     return (
         <main className='main-container padding-lr'>
-            {<AddInvoice show={showCreate} toggleShow={toggleShowCreate} />}
+            {<AddInvoice show={showCreate} toggleShow={toggleShowCreate} addInvoice={addInvoice} />}
             <section className='first-row'>
                 <div className="left-col">
                     <h1>Invoices</h1>

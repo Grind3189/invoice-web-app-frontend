@@ -9,7 +9,7 @@ export interface Items {
     name: string,
     quantity: number,
     price: number,
-    total: number | null
+    total: number
 }
 
 export type InvoiceType = {

@@ -1,0 +1,22 @@
+@media screen and (min-width: 768px) {
+    .backdrop-container {
+        position: fixed;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        top: 95px;
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.7);
+
+        
+    }
+
+}
+
+@media screen and (min-width: 1440px) {
+    .backdrop-container {
+        top: 0;
+        left: 103px;
+    }
+  }
+

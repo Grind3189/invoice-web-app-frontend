@@ -6,8 +6,9 @@ import RedButton from '../buttons/red/RedButton'
 import PurpleButton from '../buttons/purple/PurpleButton'
 import Dot from '../dot/Dot'
 import './invoice.scss'
-import { useEffect, useState, useContext } from 'react'
+import {useContext } from 'react'
 import { Theme } from '../context/ThemeContext'
+import { Width } from '../context/WidthContext'
 import ActionBtnContainer from '../../components/buttons/btnContainer/ActionBtnContainer'
 import Back from '../buttons/back/Back'
 
@@ -18,24 +19,11 @@ type InvoiceProp = {
 }
 const Invoice = ({ data }: InvoiceProp) => {
   const {theme} = useContext(Theme)
-  const [width, setWidth] = useState<number>(window.innerWidth)
+  const {width} = useContext(Width)
   const { invoiceId } = useParams()
   const filteredInvoice = data.filter(invoice => invoice.id === invoiceId)
   const invoiceInfo = filteredInvoice[0]
   const location = useLocation().state
- 
-  useEffect(() => {
-    const getWidth = () => {
-      setWidth(window.innerWidth)
-    }
-
-    window.addEventListener('resize', getWidth)
-
-    return () => {
-      window.removeEventListener('resize', getWidth)
-    }
-
-  }, [])
 
 
   const btnStyle = {
