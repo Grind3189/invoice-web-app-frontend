@@ -1,12 +1,15 @@
-import { ButtonProp } from "../../../types/buttonType"
 import "./darkGraybutton.scss"
 import { useContext } from "react"
 import { Theme } from "../../context/ThemeContext"
 
-const DarkGrayButton = ({ children }: ButtonProp) => {
+type DarkGrayButtonProp = {
+  children: React.ReactNode,
+  handleClick: () => void
+}
+const DarkGrayButton = ({ children, handleClick }: DarkGrayButtonProp ) => {
   const { theme } = useContext(Theme)
   return (
-    <button className={`dark-gray-btn ${theme} btn-general`}>{children}</button>
+    <button className={`dark-gray-btn ${theme} btn-general`} onClick={handleClick}>{children}</button>
   )
 }
 

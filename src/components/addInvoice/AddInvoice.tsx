@@ -13,6 +13,7 @@ import arrowDown from "../../assets/icon-arrow-down.svg"
 import { InvoiceType, AddressInterface } from "../../types/invoiceType"
 import { nanoid } from "nanoid"
 import Backdrop from "../backdrop/Backdrop"
+import { getEmptyInvoice, getEmptyItems, getEmptyClientAddress, getEmptySenderAddress} from "../../util"
 
 interface AddInvoiceProp {
   show: boolean
@@ -33,53 +34,12 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
   const { width } = useContext(Width)
   document.body.style.overflow = width > 768 && show ? "hidden" : "unset"
   const [showPaymentTerms, togglePaymentTerms] = useToggle(false)
-  const [senderAddress, setSenderAddress] = useState<AddressInterface>({
-    street: "",
-    city: "",
-    postCode: "",
-    country: "",
-  })
-  const [clientAddress, setClientAddress] = useState<AddressInterface>({
-    street: "",
-    city: "",
-    postCode: "",
-    country: "",
-  })
+  const [senderAddress, setSenderAddress] = useState<AddressInterface>(getEmptySenderAddress())
+  const [clientAddress, setClientAddress] = useState<AddressInterface>(getEmptyClientAddress())
 
-  const [items, setItems] = useState<ItemState>([
-    {
-      name: "",
-      quantity: 0,
-      price: 0,
-      total: 0,
-      id: nanoid(),
-    },
-  ])
+  const [items, setItems] = useState<ItemState>(getEmptyItems())
 
-  const [invoiceData, setInvoiceData] = useState<InvoiceType>({
-    id: "",
-    createdAt: "",
-    paymentDue: "",
-    description: "",
-    paymentTerms: 30,
-    clientName: "",
-    clientEmail: "",
-    status: "",
-    senderAddress: {
-      street: "",
-      city: "",
-      postCode: "",
-      country: "",
-    },
-    clientAddress: {
-      street: "",
-      city: "",
-      postCode: "",
-      country: "",
-    },
-    items: [],
-    total: 0,
-  })
+  const [invoiceData, setInvoiceData] = useState<InvoiceType>(getEmptyInvoice())
 
   useEffect(() => {
     const itemsWithoutId = items.map((item) => {
@@ -198,6 +158,26 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
     )
     setItems(updatedItems)
   }
+
+  const saveInvoice = () => {
+    addInvoice(invoiceData, 'pending')
+    toggleShow()
+  }
+
+  const saveDraft = () => {
+    addInvoice(invoiceData, 'draft')
+    toggleShow()
+  }
+
+  const discard = () => {
+    toggleShow()
+    setClientAddress(getEmptyClientAddress())
+    setSenderAddress(getEmptySenderAddress())
+    setItems(getEmptyItems())
+    setInvoiceData(getEmptyInvoice())
+  }
+
+  
 
   const itemsEl = items.map((item) => {
     return (
@@ -477,14 +457,12 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
         </form>
 
         <ActionBtnContainer>
-          <DarkGrayButton>Discard</DarkGrayButton>
-          <LightGrayButton styles={{ width: "117px" }}>
+          <DarkGrayButton handleClick={discard}>Discard</DarkGrayButton>
+          <LightGrayButton styles={{ width: "117px" }} handleClick={saveDraft}>
             Save as Draft
           </LightGrayButton>
           <PurpleButton
-            handleClick={addInvoice}
-            data={invoiceData}
-            toggleAddInvoice={toggleShow}
+            handleClick={saveInvoice}
           >
             Save & Send
           </PurpleButton>

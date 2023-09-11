@@ -5,7 +5,7 @@ import Layout from "./components/layout/Layout"
 import { Routes, Route } from 'react-router-dom'
 import { useContext, useState } from 'react'
 import { InvoiceType } from "./types/invoiceType"
-import { WidthContext } from "./components/context/WidthContext"
+import { getSixId } from "./util"
 import data from './data.json'
 
 
@@ -13,22 +13,13 @@ function App() {
   const {theme} = useContext(Theme)
   const [invoiceData, setInvoiceData] = useState(data)
 
+
   const handleAddInvoice = (data: InvoiceType, status: string) => {
-    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
-    let result = ''
-
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length)
-      result += characters.charAt(randomIndex)
-    }
-
     const updatedData = {
       ...data,
-      id: result,
+      id: getSixId(),
       status
     }
-
-    console.log(updatedData)
     setInvoiceData(prev => {
       return [
         ...prev,
@@ -42,7 +33,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout/>}>
-        <Route index element={<WidthContext> <Invoices data={invoiceData} addInvoice={handleAddInvoice}/> </WidthContext>} />
+        <Route index element={<Invoices data={invoiceData} addInvoice={handleAddInvoice}/>} />
         <Route path=":invoiceId" element={<Invoice data={invoiceData} theme={theme} />} />
       </Route>
     </Routes>

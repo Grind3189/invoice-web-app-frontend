@@ -5,11 +5,12 @@ import "./lightGrayButton.scss"
 type LightGrayButtonProp = {
   children: React.ReactNode
   styles?: React.CSSProperties
+  handleClick: () => void
 }
-const LightGrayButton = ({ children, styles }: LightGrayButtonProp) => {
+const LightGrayButton = ({ children, styles, handleClick }: LightGrayButtonProp) => {
   const { theme } = useContext(Theme)
   return (
-    <button className={`light-gray-btn ${theme} btn-general`} style={styles}>
+    <button className={`light-gray-btn ${theme} btn-general`} style={styles} onClick={handleClick}>
       {children}
     </button>
   )

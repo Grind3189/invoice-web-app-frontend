@@ -24,8 +24,6 @@ const Invoice = ({ data }: InvoiceProp) => {
   const filteredInvoice = data.filter(invoice => invoice.id === invoiceId)
   const invoiceInfo = filteredInvoice[0]
   const location = useLocation().state
-
-
   const btnStyle = {
     display: 'flex',
     justifyContent: 'center',
