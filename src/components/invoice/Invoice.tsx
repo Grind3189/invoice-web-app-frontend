@@ -1,51 +1,93 @@
-import { useParams, useLocation } from 'react-router-dom'
-import { InvoiceType } from '../../types/invoiceType'
-import { getStatusStyle } from '../../util'
-import DarkGrayButton from '../buttons/darkGray/DarkGrayButton'
-import RedButton from '../buttons/red/RedButton'
-import PurpleButton from '../buttons/purple/PurpleButton'
-import Dot from '../dot/Dot'
-import './invoice.scss'
-import {useContext } from 'react'
-import { Theme } from '../context/ThemeContext'
-import { Width } from '../context/WidthContext'
-import ActionBtnContainer from '../../components/buttons/btnContainer/ActionBtnContainer'
-import Back from '../buttons/back/Back'
-
-
+import { useParams, useLocation, useNavigate } from "react-router-dom"
+import { InvoiceType } from "../../types/invoiceType"
+import { getStatusStyle } from "../../util"
+import DarkGrayButton from "../buttons/darkGray/DarkGrayButton"
+import RedButton from "../buttons/red/RedButton"
+import PurpleButton from "../buttons/purple/PurpleButton"
+import Dot from "../dot/Dot"
+import "./invoice.scss"
+import { useContext } from "react"
+import { Theme } from "../context/ThemeContext"
+import { Width } from "../context/WidthContext"
+import useToggle from "../hooks/useToggle"
+import ActionBtnContainer from "../../components/buttons/btnContainer/ActionBtnContainer"
+import Back from "../buttons/back/Back"
+import EditInvoice from "../editInvoice/EditInvoice"
 type InvoiceProp = {
-  data: InvoiceType[],
-  theme: string
+  data: InvoiceType[]
+  markAsPaid: (id: string) => void
+  saveChanges: (data: InvoiceType) => void
+  deleteInvoice: (id: string) => void
 }
-const Invoice = ({ data }: InvoiceProp) => {
-  const {theme} = useContext(Theme)
-  const {width} = useContext(Width)
+const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) => {
+  const { theme } = useContext(Theme)
+  const { width } = useContext(Width)
+  const navigate = useNavigate()
+  const [showEdit, toggleShowEdit] = useToggle(false)
+  const [showDelete, toggleShowDelete] = useToggle(false)
   const { invoiceId } = useParams()
-  const filteredInvoice = data.filter(invoice => invoice.id === invoiceId)
+  const filteredInvoice = data.filter((invoice) => invoice.id === invoiceId)
   const invoiceInfo = filteredInvoice[0]
   const location = useLocation().state
   const btnStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '8px'
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "8px",
+  }
+
+  const handlePaid = () => {
+    markAsPaid(invoiceInfo.id)
+  }
+
+  const handleDelete = () => {
+    navigate('/', {state: location})
+    deleteInvoice(invoiceInfo.id)
   }
 
   const invoiceBtnEl = (
     <div className="invoice-buttons" style={btnStyle}>
-      <DarkGrayButton>Edit</DarkGrayButton>
-      <RedButton>Delete</RedButton>
-      <PurpleButton>Mark as Paid</PurpleButton>
+      <DarkGrayButton handleClick={toggleShowEdit}>Edit</DarkGrayButton>
+      <RedButton handleClick={toggleShowDelete}>Delete</RedButton>
+      <PurpleButton handleClick={handlePaid}>Mark as Paid</PurpleButton>
     </div>
   )
 
   return (
     <>
-      <main className='invoice-container padding-lr'>
+      {showDelete && <div className="delete-backdrop">
+        <div className="delete-container">
+          <h1>Confirm Deletion</h1>
+          <p>
+            Are you sure you want to delete invoice <br />#{invoiceInfo.id}?
+            This action cannot be undone.
+          </p>
+          <div className="delete-btn-container">
+            <DarkGrayButton handleClick={toggleShowDelete}>
+              Cancel
+            </DarkGrayButton>
+            <RedButton handleClick={handleDelete}>Delete</RedButton>
+            
+          </div>
+        </div>
+      </div>}
+
+      <main className="invoice-container padding-lr">
+        {
+          <EditInvoice
+            show={showEdit}
+            toggleShow={toggleShowEdit}
+            invoice={invoiceInfo}
+            handleSave={saveChanges}
+          />
+        }
         <Back state={location} />
-        <section className={`invoice-status-container ${theme}`} >
+        <section className={`invoice-status-container ${theme}`}>
           <p>Status</p>
-          <div className="invoice-status" style={getStatusStyle(invoiceInfo.status)}>
+          <div
+            className="invoice-status"
+            style={getStatusStyle(invoiceInfo.status)}
+          >
             <Dot status={invoiceInfo.status} />
             <p>{invoiceInfo.status}</p>
           </div>
@@ -55,14 +97,21 @@ const Invoice = ({ data }: InvoiceProp) => {
         <section className={`invoice-info-container ${theme}`}>
           <div className={`invoice-info ${theme}`}>
             <div className="id-container">
-              <h3><span className={`hashtag-${theme}`}>#</span>{invoiceInfo.id}</h3>
+              <h3>
+                <span className={`hashtag-${theme}`}>#</span>
+                {invoiceInfo.id}
+              </h3>
               <p className={theme}>{invoiceInfo.description}</p>
             </div>
             <p className={`sender-address ${theme}`}>
-              {invoiceInfo.senderAddress.street}<br />
-              {invoiceInfo.senderAddress.city}<br />
-              {invoiceInfo.senderAddress.postCode}<br />
-              {invoiceInfo.senderAddress.country}<br />
+              {invoiceInfo.senderAddress.street}
+              <br />
+              {invoiceInfo.senderAddress.city}
+              <br />
+              {invoiceInfo.senderAddress.postCode}
+              <br />
+              {invoiceInfo.senderAddress.country}
+              <br />
             </p>
 
             <div className="invoice-date-container">
@@ -78,10 +127,14 @@ const Invoice = ({ data }: InvoiceProp) => {
               <p className={theme}>Bill To</p>
               <h3>{invoiceInfo.clientName}</h3>
               <p className={`client-address ${theme}`}>
-                {invoiceInfo.clientAddress.street}<br />
-                {invoiceInfo.clientAddress.city}<br />
-                {invoiceInfo.clientAddress.postCode}<br />
-                {invoiceInfo.clientAddress.country}<br />
+                {invoiceInfo.clientAddress.street}
+                <br />
+                {invoiceInfo.clientAddress.city}
+                <br />
+                {invoiceInfo.clientAddress.postCode}
+                <br />
+                {invoiceInfo.clientAddress.country}
+                <br />
               </p>
             </div>
 
@@ -92,24 +145,28 @@ const Invoice = ({ data }: InvoiceProp) => {
           </div>
 
           <div className={`item-desc-container ${theme}`}>
-
             <div className="item-info-container">
-              {width >= 768 &&
+              {width >= 768 && (
                 <>
                   <p className={`label-name ${theme}`}>Item Name</p>
                   <p className={`label-qty ${theme}`}>QTY.</p>
                   <p className={`label-price ${theme}`}>Price</p>
                   <p className={`label-total ${theme}`}>Total</p>
                 </>
-              }
+              )}
 
               {invoiceInfo.items.map((item, index) => {
                 return (
-                  <div key={index} className='item-info'>
-                    <h3 className='item-name'>{item.name}</h3>
-                    <p className={`item-qty ${theme}`}>{item.quantity}{width < 768 && 'x'}</p>
-                    <p className={`item-price ${theme}`}>₱ {item.price.toFixed(2)}</p>
-                    <h3 className='item-total'>₱ {item.total.toFixed(2)}</h3>
+                  <div key={index} className="item-info">
+                    <h3 className="item-name">{item.name}</h3>
+                    <p className={`item-qty ${theme}`}>
+                      {item.quantity}
+                      {width < 768 && "x"}
+                    </p>
+                    <p className={`item-price ${theme}`}>
+                      ₱ {item.price.toFixed(2)}
+                    </p>
+                    <h3 className="item-total">₱ {item.total.toFixed(2)}</h3>
                   </div>
                 )
               })}
@@ -120,15 +177,10 @@ const Invoice = ({ data }: InvoiceProp) => {
               <h1>₱ {invoiceInfo.total.toFixed(2)}</h1>
             </div>
           </div>
-
         </section>
-
       </main>
 
-      {width < 768 && <ActionBtnContainer>
-        {invoiceBtnEl}
-      </ActionBtnContainer>}
-
+      {width < 768 && <ActionBtnContainer>{invoiceBtnEl}</ActionBtnContainer>}
     </>
   )
 }

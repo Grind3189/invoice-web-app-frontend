@@ -219,6 +219,49 @@
     }
 }
 
+.delete-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+
+    .delete-container {
+        background: var(--03, #1E2139);
+        z-index: 1000;
+        height: 220px;
+        width: 327px;
+        border-radius: 8px;
+        padding: 0 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        p {
+            margin-top: 0;
+            line-height: 22px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .delete-btn-container {
+            align-self: flex-end;
+            display: flex;
+            gap: 8px
+        }
+    }
+}
+
 
 @media screen and (min-width: 768px) {
     .invoice-container {

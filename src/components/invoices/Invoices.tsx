@@ -36,6 +36,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     })
 
     const [showCreate, toggleShowCreate] = useToggle(false)
+    console.log(location)
 
     const invoiceDocu = data.filter(inv => {
         if (status.draft || status.paid || status.pending) {

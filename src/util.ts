@@ -86,3 +86,24 @@ export const getEmptyItems = () => {
   }]
   return emptyItems
 }
+
+export const getEmptyEl = () => {
+  const empty = {
+    clientName: false,
+    clientEmail: false,
+    senderCity: false,
+    senderCountry: false,
+    senderPostCode: false,
+    senderStreet: false,
+    clientCity: false,
+    clientCountry: false,
+    clientPostCode: false,
+    clientStreet: false,
+    items: false,
+    createdAt: false,
+    paymentDue: false,
+    description: false,
+  }
+
+  return empty
+}

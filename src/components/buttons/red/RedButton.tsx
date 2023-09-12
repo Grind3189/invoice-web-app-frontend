@@ -1,11 +1,16 @@
 import { ButtonProp } from '../../../types/buttonType'
 import './redButton.scss'
 
-
-const RedButton = ({children} : ButtonProp) => {
+interface RedButtonProp {
+  children: React.ReactNode,
+  handleClick: () => void
+}
+const RedButton = ({children, handleClick} : RedButtonProp) => {
   return (
-    <button className='red-btn btn-general'>{children}</button>
+    <button className='red-btn btn-general' onClick={handleClick}>{children}</button>
   )
 }
+
+
 
 export default RedButton

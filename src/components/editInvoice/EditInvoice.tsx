@@ -1,29 +1,24 @@
-import "./addInvoice.scss"
+import "./editInvoice.scss"
 import { Theme } from "../context/ThemeContext"
 import { Width } from "../context/WidthContext"
 import { useContext, useEffect, useState } from "react"
 import ActionBtnContainer from "../buttons/btnContainer/ActionBtnContainer"
 import Back from "../buttons/back/Back"
 import DarkGrayButton from "../buttons/darkGray/DarkGrayButton"
-import LightGrayButton from "../buttons/lightGray/LightGrayButton"
 import PurpleButton from "../buttons/purple/PurpleButton"
 import useToggle from "../hooks/useToggle"
 import arrowDown from "../../assets/icon-arrow-down.svg"
 import { InvoiceType, AddressInterface } from "../../types/invoiceType"
 import { nanoid } from "nanoid"
 import Backdrop from "../backdrop/Backdrop"
-import {
-  getEmptyInvoice,
-  getEmptyItems,
-  getEmptyClientAddress,
-  getEmptySenderAddress,
-  getEmptyEl,
-} from "../../util"
+import {getSixId} from "../../util"
+import { useLocation } from "react-router-dom"
 
-interface AddInvoiceProp {
+interface EditInvoiceProp {
   show: boolean
   toggleShow: () => void
-  addInvoice: (data: InvoiceType, status: string) => void
+  invoice: InvoiceType,
+  handleSave: (data: InvoiceType) => void
 }
 
 type ItemState = {
@@ -51,64 +46,112 @@ interface emptyState {
   description: boolean | null
 }
 
-const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
+//Pass the invoice data
+const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
+  const location = useLocation()
+  console.log(location.pathname)
   document.body.style.overflow = width > 768 && show ? "hidden" : "unset"
   const [showPaymentTerms, togglePaymentTerms] = useToggle(false)
   const [hasError, setHasError] = useState<boolean>(false)
-  const [emptyEl, setEmptyEl] = useState<emptyState>(getEmptyEl())
-  const [senderAddress, setSenderAddress] = useState<AddressInterface>(
-    getEmptySenderAddress()
-  )
-  const [clientAddress, setClientAddress] = useState<AddressInterface>(
-    getEmptyClientAddress()
-  )
+  const [emptyEl, setEmptyEl] = useState<emptyState>({
+    clientName: false,
+    clientEmail: false,
+    senderCity: false,
+    senderCountry: false,
+    senderPostCode: false,
+    senderStreet: false,
+    clientCity: false,
+    clientCountry: false,
+    clientPostCode: false,
+    clientStreet: false,
+    items: false,
+    createdAt: false,
+    paymentDue: false,
+    description: false,
+  })
 
-  const [items, setItems] = useState<ItemState>(getEmptyItems())
+  const [senderAddress, setSenderAddress] = useState<AddressInterface>({
+    street: invoice.senderAddress.street,
+    city: invoice.senderAddress.city,
+    postCode: invoice.senderAddress.postCode,
+    country: invoice.senderAddress.country,
+  })
 
-  const [invoiceData, setInvoiceData] = useState<InvoiceType>(getEmptyInvoice())
+  const [clientAddress, setClientAddress] = useState<AddressInterface>({
+    street: invoice.clientAddress.street,
+    city: invoice.clientAddress.city,
+    postCode: invoice.clientAddress.postCode,
+    country: invoice.clientAddress.country,
+  })
 
-  useEffect(() => {
-    const itemsWithoutId = items.map((item) => {
+  const [items, setItems] = useState<ItemState>(
+    invoice.items.map((item) => {
       return {
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        total: item.total,
+        ...item,
+        id: getSixId(),
       }
     })
-    setInvoiceData((prev) => {
-      return {
-        ...prev,
-        senderAddress,
-        clientAddress,
-        items: itemsWithoutId,
-      }
-    })
-  }, [senderAddress, clientAddress, items])
+  )
+
+  const [invoiceData, setInvoiceData] = useState<InvoiceType>({
+    ...invoice,
+    senderAddress,
+    clientAddress,
+    items,
+  })
 
   useEffect(() => {
-    if (invoiceData.createdAt && invoiceData.paymentTerms) {
+    const mergeToInvoice = () => {
+      const itemsWithoutId = items.map((item) => {
+        return {
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          total: item.total,
+        }
+      })
       setInvoiceData((prev) => {
-        const createdDate = new Date(prev.createdAt)
-        createdDate.setDate(createdDate.getDate() + prev.paymentTerms)
-        const dueDate = createdDate.toISOString().split("T")[0]
         return {
           ...prev,
-          paymentDue: dueDate,
+          senderAddress,
+          clientAddress,
+          items: itemsWithoutId,
         }
       })
     }
+
+    mergeToInvoice()
+  }, [senderAddress, clientAddress, items])
+
+  useEffect(() => {
+    const updateDueDate = () => {
+      if (invoiceData.createdAt && invoiceData.paymentTerms) {
+        setInvoiceData((prev) => {
+          const createdDate = new Date(prev.createdAt)
+          createdDate.setDate(createdDate.getDate() + prev.paymentTerms)
+          const dueDate = createdDate.toISOString().split("T")[0]
+          return {
+            ...prev,
+            paymentDue: dueDate,
+          }
+        })
+      }
+    }
+    updateDueDate()
   }, [invoiceData.createdAt, invoiceData.paymentTerms])
 
   useEffect(() => {
-    let totalPrice = 0
-    for (let i = 0; i < items.length; i++) {
-      totalPrice += items[i].total
+    const updateTotalPrice = () => {
+      let totalPrice = 0
+      for (let i = 0; i < items.length; i++) {
+        totalPrice += items[i].total
+      }
+      setInvoiceData((prev) => ({ ...prev, total: totalPrice }))
     }
 
-    setInvoiceData((prev) => ({ ...prev, total: totalPrice }))
+    updateTotalPrice()
   }, [items])
 
   const handleClientAddressChange = (
@@ -196,8 +239,7 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
     })
   }
 
-
-  const saveInvoice = () => {
+  const saveChanges = () => {
     const {
       createdAt,
       paymentDue,
@@ -227,10 +269,9 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
       paymentDue &&
       description
     ) {
-      //No empty field save the invoice
-      setHasError(true)
-      addInvoice(invoiceData, "pending")
-      toggleShow()
+        setHasError(true)
+        handleSave(invoiceData)
+        toggleShow()
     } else {
       setHasError(true)
       !clientName ? setError("clientName", true) : setError("clientName", false)
@@ -261,30 +302,19 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
       !clientAddress.street
         ? setError("clientStreet", true)
         : setError("clientStreet", false)
-        !createdAt ? setError("createdAt", true) : setError("createdAt", false)
-        !paymentDue ? setError("paymentDue", true) : setError("paymentDue", false)
-        !description
+      !createdAt ? setError("createdAt", true) : setError("createdAt", false)
+      !paymentDue ? setError("paymentDue", true) : setError("paymentDue", false)
+      !description
         ? setError("description", true)
         : setError("description", false)
-        !items[0].name ? setError("items", true) : setError("items", false)
-        !items[0].price ? setError("items", true) : setError("items", false)
-        !items[0].quantity ? setError("items", true) : setError("items", false)
+      !items[0].name ? setError("items", true) : setError("items", false)
+      !items[0].price ? setError("items", true) : setError("items", false)
+      !items[0].quantity ? setError("items", true) : setError("items", false)
     }
-  }
-
-  const saveDraft = () => {
-    addInvoice(invoiceData, "draft")
-    toggleShow()
   }
 
   const discard = () => {
     toggleShow()
-    setClientAddress(getEmptyClientAddress())
-    setSenderAddress(getEmptySenderAddress())
-    setItems(getEmptyItems())
-    setInvoiceData(getEmptyInvoice())
-    setEmptyEl(getEmptyEl)
-    setHasError(false)
   }
 
   const itemsEl = items.map((item) => {
@@ -335,7 +365,13 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
           <p className="total-num">₱ {item.total}</p>
         </div>
 
-        <svg width="13" height="16" xmlns="http://www.w3.org/2000/svg" data-id={item.id} onClick={deleteItem}>
+        <svg
+          width="13"
+          height="16"
+          xmlns="http://www.w3.org/2000/svg"
+          data-id={item.id}
+          onClick={deleteItem}
+        >
           <path
             d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z"
             fill="#888EB0"
@@ -347,11 +383,11 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
   })
 
   return (
-    <Backdrop toggleShow={toggleShow} show={show}>
+    <Backdrop toggleShow={toggleShow} show={show} >
       <main className={`add-invoice-container ${!show ? "hide" : ""} ${theme}`}>
         <form className="padding-lr">
-          {width < 768 && <Back handleClick={toggleShow} />}
-          <h1>New Invoice</h1>
+          {width < 768 && <Back handleClick={toggleShow} path={location.pathname} />}
+          <h1>Edit #{invoice.id}</h1>
 
           <h3>Bill From</h3>
           <div className="bill-from-container">
@@ -574,15 +610,12 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
         </form>
 
         <ActionBtnContainer>
-          <DarkGrayButton handleClick={discard}>Discard</DarkGrayButton>
-          <LightGrayButton styles={{ width: "117px" }} handleClick={saveDraft}>
-            Save as Draft
-          </LightGrayButton>
-          <PurpleButton handleClick={saveInvoice}>Save & Send</PurpleButton>
+          <DarkGrayButton handleClick={discard}>Cancel</DarkGrayButton>
+          <PurpleButton handleClick={saveChanges}>Save Changes</PurpleButton>
         </ActionBtnContainer>
       </main>
     </Backdrop>
   )
 }
 
-export default AddInvoice
+export default EditInvoice
