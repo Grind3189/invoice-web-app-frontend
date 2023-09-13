@@ -122,3 +122,9 @@ export const getEmptyEl = () => {
 
   return empty
 }
+
+export const getPort = () => {
+  const port = "http://localhost:8080"
+
+  return port
+}

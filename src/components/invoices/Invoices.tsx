@@ -123,7 +123,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     }
 
     const filterModalEl = (
-        <div className={`filter-modal ${showFilterModal && 'show'} ${theme}`}>
+        <div className={`filter-modal ${showFilterModal && 'show'} ${theme}`} style={{userSelect: 'none'}}>
             <div className="filter-status-container draft-container">
                 <label className={`checkbox-placeholder ${status.draft ? 'active' : ''}`} htmlFor='draft'>
                     {status.draft && <svg xmlns="http://www.w3.org/2000/svg" width="10" height="9" viewBox="0 0 10 9" fill="none">

@@ -2,24 +2,30 @@ import Invoice from "./components/invoice/Invoice"
 import Invoices from "./components/invoices/Invoices"
 import { Theme } from "./components/context/ThemeContext"
 import Layout from "./components/layout/Layout"
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useNavigate } from "react-router-dom"
 import { useContext, useEffect, useState } from "react"
 import { InvoiceType } from "./types/invoiceType"
 import { getSixId } from "./util"
-import data from "./data.json"
+import Register from "./pages/register/Register"
+import Login from "./pages/login/Login"
+
 
 function App() {
   const { theme } = useContext(Theme)
-  const [invoiceData, setInvoiceData] = useState<InvoiceType[]>(data)
+  const [invoiceData, setInvoiceData] = useState<InvoiceType[] | []>([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch("http://localhost:8080/api/invoice")
+        if(!res.ok) {
+          return navigate("/register")
+        }
         const invoices: InvoiceType[] = await res.json()
         setInvoiceData(invoices)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
     }
 
@@ -37,13 +43,13 @@ function App() {
       const res = await fetch("http://localhost:8080/api/create/invoice", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(updatedData),
       })
-      
+
       const newInvoice = await res.json()
-      
+
       setInvoiceData((prev) => {
         return [...prev, newInvoice]
       })
@@ -58,17 +64,21 @@ function App() {
   }
 
   const applyChangesToHome = (data: InvoiceType) => {
-    setInvoiceData(prev => {
-      return prev.map(invoice => {
-        return invoice._id === data._id ? data : invoice  
+    setInvoiceData((prev) => {
+      return prev.map((invoice) => {
+        return invoice._id === data._id ? data : invoice
       })
     })
   }
 
   document.body.style.backgroundColor = theme === "dark" ? "#141625" : "#F8F8FB"
   document.body.style.color = theme === "dark" ? "#fff" : "#0C0E16"
+
+  
   return (
     <Routes>
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/" element={<Layout />}>
         <Route
           index

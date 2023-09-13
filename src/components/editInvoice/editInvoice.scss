@@ -1,6 +1,6 @@
 @import "../../styles/mixins";
 
-.add-invoice-container {
+.edit-invoice-container {
   position: absolute;
   top: 0;
   left: 0;
@@ -335,7 +335,7 @@
 
 
 @media screen and (min-width: 768px) {
-  .add-invoice-container {
+  .edit-invoice-container {
     max-width: 616px;
     position: fixed;
     left: 0;
@@ -429,7 +429,7 @@
 }
 
 @media screen and (min-width: 1440px) {
-  .add-invoice-container {
+  .edit-invoice-container {
     left: 103px;
     top: 0;
   }

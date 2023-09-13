@@ -1,6 +1,6 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { InvoiceType } from "../../types/invoiceType"
-import { getStatusStyle } from "../../util"
+import { getPort, getStatusStyle } from "../../util"
 import DarkGrayButton from "../buttons/darkGray/DarkGrayButton"
 import RedButton from "../buttons/red/RedButton"
 import PurpleButton from "../buttons/purple/PurpleButton"
@@ -24,6 +24,7 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
   const navigate = useNavigate()
+  const token = localStorage.getItem("token")
   const [showEdit, toggleShowEdit] = useToggle(false)
   const [showDelete, toggleShowDelete] = useToggle(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -39,11 +40,17 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
     gap: "8px",
   }
 
+  
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/invoice/${invoiceId}`
+          `${getPort()}/api/invoice/${invoiceId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
         if (!res.ok) {
           return navigate("/", { state: location })
@@ -60,22 +67,26 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
 
   const handlePaid = async () => {
     setPrevStatus(invoice.status)
-    const newData = {...invoice, status: "paid"}
+    const newData = { ...invoice, status: "paid" }
     setInvoice(newData)
     applyChangesToHome(newData)
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/edit/invoice/paid/${invoice._id}`,
-        { method: "PUT" }
+        `${getPort()}/api/edit/invoice/paid/${invoice._id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       )
       if (!res.ok) {
-        const newData = {...invoice, status: prevStatus}
+        const newData = { ...invoice, status: prevStatus }
         setInvoice(newData)
         applyChangesToHome(newData)
         return navigate("/")
       }
-      
     } catch (err) {
       console.error(err)
     }
@@ -84,23 +95,30 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
   const handleDelete = async () => {
     navigate("/", { state: location })
     deleteInvoice(invoice.id)
-    await fetch(`http://localhost:8080/api/delete/invoice/${invoice._id}`, {
+    await fetch(`${getPort()}/api/delete/invoice/${invoice._id}`, {
       method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     })
   }
 
   const handleSave = async (invoiceData: InvoiceType) => {
     setInvoice(invoiceData)
     applyChangesToHome(invoiceData)
-    const res = await fetch(`http://localhost:8080/api/edit/invoice/${invoiceId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(invoiceData)
-    })
+    const res = await fetch(
+      `${getPort()}/api/edit/invoice/${invoiceId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(invoiceData),
+      }
+    )
+    console.log(res)
     await res.json()
-    
   }
 
   const invoiceBtnEl = (
@@ -111,8 +129,8 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
     </div>
   )
 
-  if(isLoading) {
-    return 
+  if (isLoading) {
+    return
   }
 
   return (

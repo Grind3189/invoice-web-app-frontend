@@ -1,0 +1,99 @@
+.login-container {
+    background-color: #10141e;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 48px 24px;
+    gap: 82px;
+  
+    img {
+      border-radius: 50%;
+    }
+  
+    *.error-mess {
+      color: #fc4747;
+    }
+  
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 24px;
+      background-color: #161d2f;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 450px;
+  
+      .general-err {
+        align-self: flex-start;
+      }
+      h1 {
+        font-weight: 500;
+        font-size: 32px;
+        margin-bottom: 20px;
+        margin-top: 0;
+      }
+  
+      div {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        position: relative;
+  
+        input {
+          border: none;
+          background-color: transparent;
+          outline: none;
+          color: inherit;
+          font-family: inherit;
+          font-size: 15px;
+          width: 100%;
+          border-bottom: 1px solid #5a698f;
+          padding: 0 0 16px 16px;
+  
+          &:focus {
+            border-bottom: 1px solid white;
+          }
+        }
+  
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 1000px #161d2f inset !important;
+          -webkit-text-fill-color: #fff !important;
+        }
+  
+        span {
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
+        }
+      }
+  
+      button {
+        padding: 14px 0;
+        font-size: 15px;
+        font-weight: 300;
+        font-family: inherit;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+      }
+  
+      span {
+        text-align: center;
+        font-size: 15px;
+        font-weight: 300;
+  
+        a {
+          text-decoration: none;
+          color: #9277ff;
+        }
+      }
+    }
+  }
+  

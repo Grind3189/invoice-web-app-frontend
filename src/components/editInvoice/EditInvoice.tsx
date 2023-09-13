@@ -383,7 +383,7 @@ const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp)
 
   return (
     <Backdrop toggleShow={toggleShow} show={show} >
-      <main className={`add-invoice-container ${!show ? "hide" : ""} ${theme}`}>
+      <main className={`edit-invoice-container ${!show ? "hide" : ""} ${theme}`}>
         <form className="padding-lr">
           {width < 768 && <Back handleClick={toggleShow} path={location.pathname} />}
           <h1>Edit #{invoice.id}</h1>

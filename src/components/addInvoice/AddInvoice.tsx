@@ -228,7 +228,6 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
       paymentDue &&
       description
     ) {
-      //No empty field save the invoice
       setHasError(true)
       addInvoice(invoiceData, "pending")
       toggleShow()
