@@ -5,7 +5,7 @@ import Layout from "./components/layout/Layout"
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { useContext, useEffect, useState } from "react"
 import { InvoiceType } from "./types/invoiceType"
-import { getSixId } from "./util"
+import { getPort, getSixId } from "./util"
 import Register from "./pages/register/Register"
 import Login from "./pages/login/Login"
 
@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/invoice")
+        const res = await fetch(`${getPort()}/api/invoice`, {credentials: "include"})
         if(!res.ok) {
           return navigate("/register")
         }
@@ -40,12 +40,13 @@ function App() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/create/invoice", {
+      const res = await fetch(`${getPort()}/api/create/invoice`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(updatedData),
+        credentials: "include"
       })
 
       const newInvoice = await res.json()

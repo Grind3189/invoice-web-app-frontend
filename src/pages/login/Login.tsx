@@ -70,6 +70,7 @@ function Login() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(loginData),
+      credentials: "include"
     })
 
     if (res.status === 401) {

@@ -40,18 +40,12 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
     gap: "8px",
   }
 
-  
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const res = await fetch(
-          `${getPort()}/api/invoice/${invoiceId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const res = await fetch(`${getPort()}/api/invoice/${invoiceId}`, {
+          credentials: "include",
+        })
         if (!res.ok) {
           return navigate("/", { state: location })
         }
@@ -76,9 +70,7 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
         `${getPort()}/api/edit/invoice/paid/${invoice._id}`,
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include"
         }
       )
       if (!res.ok) {
@@ -97,26 +89,21 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
     deleteInvoice(invoice.id)
     await fetch(`${getPort()}/api/delete/invoice/${invoice._id}`, {
       method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
+      credentials: "include"
     })
   }
 
   const handleSave = async (invoiceData: InvoiceType) => {
     setInvoice(invoiceData)
     applyChangesToHome(invoiceData)
-    const res = await fetch(
-      `${getPort()}/api/edit/invoice/${invoiceId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(invoiceData),
-      }
-    )
+    const res = await fetch(`${getPort()}/api/edit/invoice/${invoiceId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(invoiceData),
+      credentials: "include"
+    })
     console.log(res)
     await res.json()
   }
