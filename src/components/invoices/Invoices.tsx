@@ -27,16 +27,15 @@ interface StatusState {
 const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     const {theme} = useContext(Theme)
     const {width} = useContext(Width)
-    const location: StatusState = useLocation().state
+    const location = useLocation().state
     const [showFilterModal, setShowFilterModal] = useToggle(false)
     const [status, setStatus] = useState<StatusState>(location ? location :{
         draft: false,
         pending: false,
         paid: false
     })
-
     const [showCreate, toggleShowCreate] = useToggle(false)
-    console.log(location)
+    
 
     const invoiceDocu = data.filter(inv => {
         if (status.draft || status.paid || status.pending) {
@@ -71,7 +70,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     const invoicesEl = invoiceDocu.map(invoice => {
         return (
             <div key={invoice.id} className={`invoice-hero invoice-hero-${theme}`}>
-                <Link to={`/${invoice.id}`} state={status}>
+                <Link to={`/${invoice._id}`} state={status}>
                     <p className='invoice-id'>
                         <span className={`hashtag-${theme}`}>#</span>
                         {invoice.id}
@@ -79,8 +78,8 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
                     <p className={`due-date due-date-${theme}`}>Due {invoice.paymentDue}</p>
                     <p className='name'>{invoice.clientName}</p>
                     <p className='total'>₱ {invoice.total}</p>
-                    <div className="status-container" style={getStatusStyle(invoice.status)}>
-                        <Dot status={invoice.status} />
+                    <div className="status-container" style={getStatusStyle(invoice.status, theme)}>
+                        <Dot status={invoice.status} theme={theme} />
                         <p className='status'>{invoice.status}</p>
                     </div>
                     {width >= 768 && <img src={arrowRightIc} alt='arrow right' />}
@@ -128,7 +127,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
             <div className="filter-status-container draft-container">
                 <label className={`checkbox-placeholder ${status.draft ? 'active' : ''}`} htmlFor='draft'>
                     {status.draft && <svg xmlns="http://www.w3.org/2000/svg" width="10" height="9" viewBox="0 0 10 9" fill="none">
-                        <path d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832" stroke="white" stroke-width="2" />
+                        <path d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832" stroke="white" strokeWidth="2" />
                     </svg>}
                 </label>
                 <input
@@ -142,7 +141,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
             <div className="filter-status-container pending-container">
                 <label className={`checkbox-placeholder ${status.pending ? 'active' : ''}`} htmlFor='pending'>
                     {status.pending && <svg xmlns="http://www.w3.org/2000/svg" width="10" height="9" viewBox="0 0 10 9" fill="none">
-                        <path d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832" stroke="white" stroke-width="2" />
+                        <path d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832" stroke="white" strokeWidth="2" />
                     </svg>}
                 </label>
                 <input
@@ -156,7 +155,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
             <div className="filter-status-container paid-container">
                 <label className={`checkbox-placeholder ${status.paid ? 'active' : ''}`} htmlFor='paid'>
                     {status.paid && <svg xmlns="http://www.w3.org/2000/svg" width="10" height="9" viewBox="0 0 10 9" fill="none">
-                        <path d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832" stroke="white" stroke-width="2" />
+                        <path d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832" stroke="white" strokeWidth="2" />
                     </svg>}
                 </label>
                 <input

@@ -1,7 +1,7 @@
 import { InvoiceType } from "./types/invoiceType"
 import { nanoid } from "nanoid"
 
-export const getStatusStyle = (status: string) => {
+export const getStatusStyle = (status: string, theme: string) => {
   const style = {
     backgroundColor:
       status === "paid"
@@ -16,7 +16,22 @@ export const getStatusStyle = (status: string) => {
         ? "#FF8F00"
         : "#dfe3fa",
   }
-  return style
+
+  const lightstyle = {
+    backgroundColor:
+      status === "paid"
+        ? "rgba(51, 214, 159, 0.05)"
+        : status === "pending"
+        ? "rgba(255, 143, 0, 0.05)"
+        : "	rgba(55, 59, 83, .05)",
+    color:
+      status === "paid"
+        ? "#33D69F"
+        : status === "pending"
+        ? "#FF8F00"
+        : "#373B53",
+  }
+  return theme === 'light' ? lightstyle : style
 }
 
 export const getSixId = () => {

@@ -6,28 +6,31 @@ import RedButton from "../buttons/red/RedButton"
 import PurpleButton from "../buttons/purple/PurpleButton"
 import Dot from "../dot/Dot"
 import "./invoice.scss"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Theme } from "../context/ThemeContext"
 import { Width } from "../context/WidthContext"
 import useToggle from "../hooks/useToggle"
 import ActionBtnContainer from "../../components/buttons/btnContainer/ActionBtnContainer"
 import Back from "../buttons/back/Back"
 import EditInvoice from "../editInvoice/EditInvoice"
+
 type InvoiceProp = {
   data: InvoiceType[]
-  markAsPaid: (id: string) => void
-  saveChanges: (data: InvoiceType) => void
   deleteInvoice: (id: string) => void
+  applyChangesToHome: (data: InvoiceType) => void
 }
-const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) => {
+
+const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
   const navigate = useNavigate()
   const [showEdit, toggleShowEdit] = useToggle(false)
   const [showDelete, toggleShowDelete] = useToggle(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { invoiceId } = useParams()
   const filteredInvoice = data.filter((invoice) => invoice.id === invoiceId)
-  const invoiceInfo = filteredInvoice[0]
+  const [invoice, setInvoice] = useState<InvoiceType>(filteredInvoice[0])
+  const [prevStatus, setPrevStatus] = useState<string>("")
   const location = useLocation().state
   const btnStyle = {
     display: "flex",
@@ -36,13 +39,68 @@ const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) 
     gap: "8px",
   }
 
-  const handlePaid = () => {
-    markAsPaid(invoiceInfo.id)
+  useEffect(() => {
+    const fetchInvoice = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/invoice/${invoiceId}`
+        )
+        if (!res.ok) {
+          return navigate("/", { state: location })
+        }
+        const result = await res.json()
+        setInvoice(result)
+        setIsLoading(false)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    fetchInvoice()
+  }, [])
+
+  const handlePaid = async () => {
+    setPrevStatus(invoice.status)
+    const newData = {...invoice, status: "paid"}
+    setInvoice(newData)
+    applyChangesToHome(newData)
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/edit/invoice/paid/${invoice._id}`,
+        { method: "PUT" }
+      )
+      if (!res.ok) {
+        const newData = {...invoice, status: prevStatus}
+        setInvoice(newData)
+        applyChangesToHome(newData)
+        return navigate("/")
+      }
+      
+    } catch (err) {
+      console.error(err)
+    }
   }
 
-  const handleDelete = () => {
-    navigate('/', {state: location})
-    deleteInvoice(invoiceInfo.id)
+  const handleDelete = async () => {
+    navigate("/", { state: location })
+    deleteInvoice(invoice.id)
+    await fetch(`http://localhost:8080/api/delete/invoice/${invoice._id}`, {
+      method: "DELETE",
+    })
+  }
+
+  const handleSave = async (invoiceData: InvoiceType) => {
+    setInvoice(invoiceData)
+    applyChangesToHome(invoiceData)
+    const res = await fetch(`http://localhost:8080/api/edit/invoice/${invoiceId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(invoiceData)
+    })
+    await res.json()
+    
   }
 
   const invoiceBtnEl = (
@@ -53,32 +111,37 @@ const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) 
     </div>
   )
 
+  if(isLoading) {
+    return 
+  }
+
   return (
     <>
-      {showDelete && <div className="delete-backdrop">
-        <div className="delete-container">
-          <h1>Confirm Deletion</h1>
-          <p>
-            Are you sure you want to delete invoice <br />#{invoiceInfo.id}?
-            This action cannot be undone.
-          </p>
-          <div className="delete-btn-container">
-            <DarkGrayButton handleClick={toggleShowDelete}>
-              Cancel
-            </DarkGrayButton>
-            <RedButton handleClick={handleDelete}>Delete</RedButton>
-            
+      {showDelete && (
+        <div className="delete-backdrop">
+          <div className="delete-container">
+            <h1>Confirm Deletion</h1>
+            <p>
+              Are you sure you want to delete invoice <br />#{invoice.id}? This
+              action cannot be undone.
+            </p>
+            <div className="delete-btn-container">
+              <DarkGrayButton handleClick={toggleShowDelete}>
+                Cancel
+              </DarkGrayButton>
+              <RedButton handleClick={handleDelete}>Delete</RedButton>
+            </div>
           </div>
         </div>
-      </div>}
+      )}
 
       <main className="invoice-container padding-lr">
         {
           <EditInvoice
             show={showEdit}
             toggleShow={toggleShowEdit}
-            invoice={invoiceInfo}
-            handleSave={saveChanges}
+            invoice={invoice}
+            handleSave={handleSave}
           />
         }
         <Back state={location} />
@@ -86,10 +149,10 @@ const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) 
           <p>Status</p>
           <div
             className="invoice-status"
-            style={getStatusStyle(invoiceInfo.status)}
+            style={getStatusStyle(invoice.status, theme)}
           >
-            <Dot status={invoiceInfo.status} />
-            <p>{invoiceInfo.status}</p>
+            <Dot status={invoice.status} theme={theme} />
+            <p>{invoice.status}</p>
           </div>
           {width >= 768 && invoiceBtnEl}
         </section>
@@ -99,48 +162,48 @@ const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) 
             <div className="id-container">
               <h3>
                 <span className={`hashtag-${theme}`}>#</span>
-                {invoiceInfo.id}
+                {invoice.id}
               </h3>
-              <p className={theme}>{invoiceInfo.description}</p>
+              <p className={theme}>{invoice.description}</p>
             </div>
             <p className={`sender-address ${theme}`}>
-              {invoiceInfo.senderAddress.street}
+              {invoice.senderAddress.street}
               <br />
-              {invoiceInfo.senderAddress.city}
+              {invoice.senderAddress.city}
               <br />
-              {invoiceInfo.senderAddress.postCode}
+              {invoice.senderAddress.postCode}
               <br />
-              {invoiceInfo.senderAddress.country}
+              {invoice.senderAddress.country}
               <br />
             </p>
 
             <div className="invoice-date-container">
               <p className={theme}>Invoice Date</p>
-              <h3>{invoiceInfo.createdAt}</h3>
+              <h3>{invoice.createdAt}</h3>
             </div>
 
             <div className="payment-due-container">
               <p className={theme}>Payment Due</p>
-              <h3>{invoiceInfo.paymentDue}</h3>
+              <h3>{invoice.paymentDue}</h3>
             </div>
             <div className="bill-to-container">
               <p className={theme}>Bill To</p>
-              <h3>{invoiceInfo.clientName}</h3>
+              <h3>{invoice.clientName}</h3>
               <p className={`client-address ${theme}`}>
-                {invoiceInfo.clientAddress.street}
+                {invoice.clientAddress.street}
                 <br />
-                {invoiceInfo.clientAddress.city}
+                {invoice.clientAddress.city}
                 <br />
-                {invoiceInfo.clientAddress.postCode}
+                {invoice.clientAddress.postCode}
                 <br />
-                {invoiceInfo.clientAddress.country}
+                {invoice.clientAddress.country}
                 <br />
               </p>
             </div>
 
             <div className="sent-to-container">
               <p className={theme}>Sent to</p>
-              <h3>{invoiceInfo.clientEmail}</h3>
+              <h3>{invoice.clientEmail}</h3>
             </div>
           </div>
 
@@ -155,7 +218,7 @@ const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) 
                 </>
               )}
 
-              {invoiceInfo.items.map((item, index) => {
+              {invoice.items.map((item, index) => {
                 return (
                   <div key={index} className="item-info">
                     <h3 className="item-name">{item.name}</h3>
@@ -174,7 +237,7 @@ const Invoice = ({ data, markAsPaid, saveChanges, deleteInvoice }: InvoiceProp) 
 
             <div className={`total-container ${theme}`}>
               <h4>Amount Due</h4>
-              <h1>₱ {invoiceInfo.total.toFixed(2)}</h1>
+              <h1>₱ {invoice.total.toFixed(2)}</h1>
             </div>
           </div>
         </section>

@@ -13,6 +13,7 @@ export interface Items {
 }
 
 export type InvoiceType = {
+    _id?: string
     id: string,
     createdAt: string,
     paymentDue: string,

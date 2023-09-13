@@ -3,48 +3,66 @@ import Invoices from "./components/invoices/Invoices"
 import { Theme } from "./components/context/ThemeContext"
 import Layout from "./components/layout/Layout"
 import { Routes, Route } from "react-router-dom"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { InvoiceType } from "./types/invoiceType"
 import { getSixId } from "./util"
 import data from "./data.json"
 
 function App() {
   const { theme } = useContext(Theme)
-  const [invoiceData, setInvoiceData] = useState(data)
+  const [invoiceData, setInvoiceData] = useState<InvoiceType[]>(data)
 
-  const handleAddInvoice = (data: InvoiceType, status: string) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/invoice")
+        const invoices: InvoiceType[] = await res.json()
+        setInvoiceData(invoices)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const handleAddInvoice = async (data: InvoiceType, status: string) => {
     const updatedData = {
       ...data,
       id: getSixId(),
       status,
     }
-    setInvoiceData((prev) => {
-      return [...prev, updatedData]
-    })
-  }
 
-  const saveChanges = (data: InvoiceType) => {
-    const tempData = invoiceData
-    const filteredData = tempData.filter((invoice) => invoice.id !== data.id)
-    setInvoiceData([...filteredData, data])
-  }
-
-  const markAsPaid = (id: string) => {
-    const tempData = invoiceData
-    const newData = tempData.map((data) => {
-      if (data.id === id) {
-        return {
-          ...data,
-          status: "paid",
-        }
-      } else return data
-    })
-    setInvoiceData(newData)
+    try {
+      const res = await fetch("http://localhost:8080/api/create/invoice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      })
+      
+      const newInvoice = await res.json()
+      
+      setInvoiceData((prev) => {
+        return [...prev, newInvoice]
+      })
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const deleteInvoice = (id: string) => {
     const filteredData = invoiceData.filter((invoice) => invoice.id !== id)
     setInvoiceData(filteredData)
+  }
+
+  const applyChangesToHome = (data: InvoiceType) => {
+    setInvoiceData(prev => {
+      return prev.map(invoice => {
+        return invoice._id === data._id ? data : invoice  
+      })
+    })
   }
 
   document.body.style.backgroundColor = theme === "dark" ? "#141625" : "#F8F8FB"
@@ -63,9 +81,8 @@ function App() {
           element={
             <Invoice
               data={invoiceData}
-              markAsPaid={markAsPaid}
-              saveChanges={saveChanges}
               deleteInvoice={deleteInvoice}
+              applyChangesToHome={applyChangesToHome}
             />
           }
         />
