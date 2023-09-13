@@ -24,7 +24,6 @@ const Invoice = ({ data, deleteInvoice, applyChangesToHome }: InvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
   const navigate = useNavigate()
-  const token = localStorage.getItem("token")
   const [showEdit, toggleShowEdit] = useToggle(false)
   const [showDelete, toggleShowDelete] = useToggle(false)
   const [isLoading, setIsLoading] = useState(true)

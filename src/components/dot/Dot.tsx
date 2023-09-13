@@ -1,5 +1,3 @@
-import React from 'react'
-
 type DotProp = {
     status: string
     theme: string

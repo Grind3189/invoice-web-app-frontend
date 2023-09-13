@@ -1,4 +1,3 @@
-import { ButtonProp } from '../../../types/buttonType'
 import './redButton.scss'
 
 interface RedButtonProp {
