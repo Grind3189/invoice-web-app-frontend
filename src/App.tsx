@@ -20,7 +20,7 @@ function App() {
       try {
         const res = await fetch(`${getPort()}/api/invoice`, {credentials: "include"})
         if(!res.ok) {
-          return navigate("/register")
+          navigate('/register')
         }
         const invoices: InvoiceType[] = await res.json()
         setInvoiceData(invoices)
