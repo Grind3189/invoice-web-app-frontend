@@ -127,7 +127,7 @@ function Login() {
           onKeyDown={(e) => e.key === "Enter" && handleLogin}
           disabled={isLoading}
         >
-         {isLoading ? "Loading..." : "Login"}
+         {isLoading ? "Logging in..." : "Login"}
         </button>
         <span>
           Don't have an account ? <Link to="/register">Register</Link>
