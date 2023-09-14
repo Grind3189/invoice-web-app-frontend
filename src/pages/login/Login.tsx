@@ -26,15 +26,16 @@ function Login() {
 
   const [error, setError] = useState<string>("")
   const inputRef = useRef<HTMLInputElement>(null!)
+  const [isLoading, setIsLoading] = useState(false)
   const { width } = useContext(Width)
   const navigate = useNavigate()
 
   useEffect(() => {
     inputRef.current.focus()
   }, [])
-  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError("")
     setLoginData((prev) => {
       return {
         ...prev,
@@ -44,6 +45,7 @@ function Login() {
   }
 
   const handleLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
+    setIsLoading(true)
     e.preventDefault()
     const { email, password } = loginData
 
@@ -70,9 +72,10 @@ function Login() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(loginData),
-      credentials: "include"
+      credentials: "include",
     })
 
+    setIsLoading(false)
     if (res.status === 401) {
       return setError("Invalid email or password")
     } else if (res.status === 403) {
@@ -80,7 +83,7 @@ function Login() {
     }
 
     await res.json()
-    navigate('/')
+    navigate("/")
   }
 
   return (
@@ -119,7 +122,13 @@ function Login() {
           )}
         </div>
 
-        <button onClick={handleLogin} onKeyDown={(e) => e.key === 'Enter' && handleLogin}>Login</button>
+        <button
+          onClick={handleLogin}
+          onKeyDown={(e) => e.key === "Enter" && handleLogin}
+          disabled={isLoading}
+        >
+         {isLoading ? "Loading..." : "Login"}
+        </button>
         <span>
           Don't have an account ? <Link to="/register">Register</Link>
         </span>

@@ -12,8 +12,19 @@ header {
         background-color: #1E2139;
     }
 
+    .logo {
+        margin-right: auto;
+
+    }
+    a {
+        text-decoration: none;
+        color: #fff;
+        font-weight: 500;
+        margin-right: 24px;
+    }
+
+
     .theme-icon {
-        margin-left: auto;
         margin-right: 24px;
         cursor: pointer;
     }
@@ -47,9 +58,15 @@ header {
         border-radius: 0px 20px 20px 0px;
         .logo {
             width: 100%;
+            margin-bottom: auto;
+        }
+
+        a {
+            margin: 0;
+            margin-bottom: 27px;
         }
         .theme-icon {
-            margin: auto 0 27px 0;
+            margin: 0 0 27px 0;
         }
 
         .avatar-container {

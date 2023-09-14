@@ -18,12 +18,15 @@ import {
   getEmptyClientAddress,
   getEmptySenderAddress,
   getEmptyEl,
+  getSixId,
+  getPort,
 } from "../../util"
+import { useNavigate } from "react-router-dom"
 
 interface AddInvoiceProp {
   show: boolean
   toggleShow: () => void
-  addInvoice: (data: InvoiceType, status: string) => void
+  applyChangesToHome: (data: InvoiceType) => void
 }
 
 type ItemState = {
@@ -51,12 +54,25 @@ interface emptyState {
   description: boolean | null
 }
 
-const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
+interface Loading {
+  draft: boolean
+  send: boolean
+}
+
+const AddInvoice = ({
+  show,
+  toggleShow,
+  applyChangesToHome,
+}: AddInvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
-  document.body.style.overflow = width > 768 && show ? "hidden" : "unset"
   const [showPaymentTerms, togglePaymentTerms] = useToggle(false)
+  const navigate = useNavigate()
   const [hasError, setHasError] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<Loading>({
+    draft: false,
+    send: false,
+  })
   const [emptyEl, setEmptyEl] = useState<emptyState>(getEmptyEl())
   const [senderAddress, setSenderAddress] = useState<AddressInterface>(
     getEmptySenderAddress()
@@ -64,10 +80,9 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
   const [clientAddress, setClientAddress] = useState<AddressInterface>(
     getEmptyClientAddress()
   )
-
   const [items, setItems] = useState<ItemState>(getEmptyItems())
-
   const [invoiceData, setInvoiceData] = useState<InvoiceType>(getEmptyInvoice())
+  document.body.style.overflow = width > 768 && show ? "hidden" : "unset"
 
   useEffect(() => {
     const itemsWithoutId = items.map((item) => {
@@ -178,7 +193,6 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
         },
       ]
     })
-    
   }
 
   const deleteItem = (e: React.MouseEvent<HTMLOrSVGElement>) => {
@@ -196,7 +210,6 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
       }
     })
   }
-
 
   const saveInvoice = () => {
     const {
@@ -228,9 +241,9 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
       paymentDue &&
       description
     ) {
-      setHasError(true)
-      addInvoice(invoiceData, "pending")
-      toggleShow()
+      setHasError(false)
+      setIsLoading((prev) => ({ ...prev, send: true }))
+      addInvoice("pending")
     } else {
       setHasError(true)
       !clientName ? setError("clientName", true) : setError("clientName", false)
@@ -261,20 +274,20 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
       !clientAddress.street
         ? setError("clientStreet", true)
         : setError("clientStreet", false)
-        !createdAt ? setError("createdAt", true) : setError("createdAt", false)
-        !paymentDue ? setError("paymentDue", true) : setError("paymentDue", false)
-        !description
+      !createdAt ? setError("createdAt", true) : setError("createdAt", false)
+      !paymentDue ? setError("paymentDue", true) : setError("paymentDue", false)
+      !description
         ? setError("description", true)
         : setError("description", false)
-        !items[0].name ? setError("items", true) : setError("items", false)
-        !items[0].price ? setError("items", true) : setError("items", false)
-        !items[0].quantity ? setError("items", true) : setError("items", false)
+      !items[0].name ? setError("items", true) : setError("items", false)
+      !items[0].price ? setError("items", true) : setError("items", false)
+      !items[0].quantity ? setError("items", true) : setError("items", false)
     }
   }
 
   const saveDraft = () => {
-    addInvoice(invoiceData, "draft")
-    toggleShow()
+    setIsLoading((prev) => ({ ...prev, draft: true }))
+    addInvoice("draft")
   }
 
   const discard = () => {
@@ -285,6 +298,36 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
     setInvoiceData(getEmptyInvoice())
     setEmptyEl(getEmptyEl)
     setHasError(false)
+  }
+
+  const addInvoice = async (status: string) => {
+    const updatedData = {
+      ...invoiceData,
+      id: getSixId(),
+      status,
+    }
+
+    try {
+      const res = await fetch(`${getPort()}/api/create/invoice`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+        credentials: "include",
+      })
+      setIsLoading({ send: false, draft: false })
+      if (res.status === 403) {
+        return navigate("/register")
+      } else if (res.status === 400) {
+        return navigate("/")
+      }
+      const newInvoice = await res.json()
+      applyChangesToHome(newInvoice)
+      toggleShow()
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const itemsEl = items.map((item) => {
@@ -335,7 +378,13 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
           <p className="total-num">₱ {item.total}</p>
         </div>
 
-        <svg width="13" height="16" xmlns="http://www.w3.org/2000/svg" data-id={item.id} onClick={deleteItem}>
+        <svg
+          width="13"
+          height="16"
+          xmlns="http://www.w3.org/2000/svg"
+          data-id={item.id}
+          onClick={deleteItem}
+        >
           <path
             d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z"
             fill="#888EB0"
@@ -575,10 +624,16 @@ const AddInvoice = ({ show, toggleShow, addInvoice }: AddInvoiceProp) => {
 
         <ActionBtnContainer>
           <DarkGrayButton handleClick={discard}>Discard</DarkGrayButton>
-          <LightGrayButton styles={{ width: "117px" }} handleClick={saveDraft}>
-            Save as Draft
+          <LightGrayButton
+            styles={{ width: "117px" }}
+            handleClick={saveDraft}
+            isDisabled={isLoading.draft}
+          >
+            {isLoading.draft ? "Loading..." : "Save as Draft"}
           </LightGrayButton>
-          <PurpleButton handleClick={saveInvoice}>Save & Send</PurpleButton>
+          <PurpleButton handleClick={saveInvoice} isDisabled={isLoading.send}>
+            {isLoading.send ? "Saving..." : "Save & Send"}
+          </PurpleButton>
         </ActionBtnContainer>
       </main>
     </Backdrop>

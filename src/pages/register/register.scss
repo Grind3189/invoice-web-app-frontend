@@ -82,6 +82,11 @@
       border-radius: 6px;
       border: none;
       cursor: pointer;
+
+      &:disabled {
+        color: white;
+        cursor: not-allowed;
+      }
     }
 
     span {

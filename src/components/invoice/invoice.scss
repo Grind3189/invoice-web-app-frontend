@@ -7,6 +7,30 @@
     margin-left: auto;
     margin-bottom: 56px;
 
+    *.skeleton-light {
+        animation: skeleton-loading-light 1s linear infinite alternate;
+    }
+    *.skeleton-dark {
+        animation: skeleton-loading 1s linear infinite alternate;
+    }
+
+    @keyframes skeleton-loading {
+        0% {
+            background-color: hsl(231, 26%, 16%);
+        }
+        100% {
+            background-color: #141625;
+        }
+    }
+    @keyframes skeleton-loading-light {
+        0% {
+            background-color: hsl(0, 0%, 87%);
+        }
+        100% {
+            background-color: #8a8a8a;
+        }
+    }
+
     .invoice-status-container {
         margin-bottom: 16px;
         height: 91px;
@@ -31,6 +55,7 @@
             font-weight: 500;
         }
 
+      
         .invoice-status {
             width: 104px;
             height: 40px;
@@ -76,6 +101,7 @@
         &.dark {
             @include dark-invoice
         }
+
 
         .invoice-info {
             display: grid;
@@ -128,6 +154,30 @@
 
             &.light {
                 background-color: #F9FAFE;
+            }
+
+            &.item-skeleton-dark {
+                animation: item-skeleton-loading 1s linear infinite alternate;
+            }
+            &.item-skeleton-light {
+                animation: item-skeleton-light 1s linear infinite alternate;
+            }
+            
+            @keyframes item-skeleton-loading {
+                0% {
+                    background-color: hsl(228, 18%, 22%);
+                }
+                100% {
+                    background-color: #1c1d29;
+                }
+            }
+            @keyframes item-skeleton-light {
+                0% {
+                    background-color: hsl(0, 0%, 76%);
+                }
+                100% {
+                    background-color: #a1a1a1;
+                }
             }
 
             .item-info-container {

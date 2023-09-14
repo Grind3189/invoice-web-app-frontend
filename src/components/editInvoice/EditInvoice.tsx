@@ -11,13 +11,13 @@ import arrowDown from "../../assets/icon-arrow-down.svg"
 import { InvoiceType, AddressInterface } from "../../types/invoiceType"
 import { nanoid } from "nanoid"
 import Backdrop from "../backdrop/Backdrop"
-import {getSixId} from "../../util"
+import { getSixId } from "../../util"
 import { useLocation } from "react-router-dom"
 
 interface EditInvoiceProp {
   show: boolean
   toggleShow: () => void
-  invoice: InvoiceType,
+  invoice: InvoiceType
   handleSave: (data: InvoiceType) => void
 }
 
@@ -47,13 +47,19 @@ interface emptyState {
 }
 
 //Pass the invoice data
-const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp) => {
+const EditInvoice = ({
+  show,
+  toggleShow,
+  invoice,
+  handleSave,
+}: EditInvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
   const location = useLocation()
   document.body.style.overflow = width > 768 && show ? "hidden" : "unset"
   const [showPaymentTerms, togglePaymentTerms] = useToggle(false)
   const [hasError, setHasError] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [emptyEl, setEmptyEl] = useState<emptyState>({
     clientName: false,
     clientEmail: false,
@@ -238,7 +244,7 @@ const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp)
     })
   }
 
-  const saveChanges = () => {
+  const saveChanges = async () => {
     const {
       createdAt,
       paymentDue,
@@ -268,9 +274,16 @@ const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp)
       paymentDue &&
       description
     ) {
-        setHasError(true)
-        handleSave(invoiceData)
+      try {
+        setHasError(false)
+        setIsLoading(true)
+        await handleSave(invoiceData)
+        setIsLoading(false)
         toggleShow()
+      } catch(err) {
+        console.error(err)
+        setIsLoading(false)
+      }
     } else {
       setHasError(true)
       !clientName ? setError("clientName", true) : setError("clientName", false)
@@ -382,10 +395,14 @@ const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp)
   })
 
   return (
-    <Backdrop toggleShow={toggleShow} show={show} >
-      <main className={`edit-invoice-container ${!show ? "hide" : ""} ${theme}`}>
+    <Backdrop toggleShow={toggleShow} show={show}>
+      <main
+        className={`edit-invoice-container ${!show ? "hide" : ""} ${theme}`}
+      >
         <form className="padding-lr">
-          {width < 768 && <Back handleClick={toggleShow} path={location.pathname} />}
+          {width < 768 && (
+            <Back handleClick={toggleShow} path={location.pathname} />
+          )}
           <h1>Edit #{invoice.id}</h1>
 
           <h3>Bill From</h3>
@@ -610,7 +627,9 @@ const EditInvoice = ({ show, toggleShow, invoice, handleSave }: EditInvoiceProp)
 
         <ActionBtnContainer>
           <DarkGrayButton handleClick={discard}>Cancel</DarkGrayButton>
-          <PurpleButton handleClick={saveChanges}>Save Changes</PurpleButton>
+          <PurpleButton handleClick={saveChanges} isDisabled={isLoading}>
+            {isLoading ? "Saving..." : "Save Changes"}
+          </PurpleButton>
         </ActionBtnContainer>
       </main>
     </Backdrop>

@@ -15,6 +15,7 @@ interface EmptyErrorState {
   password: boolean
   repeatPassword: boolean
 }
+
 function Register() {
   const [registerData, setRegisterData] = useState<RegisterData>({
     email: "",
@@ -30,6 +31,7 @@ function Register() {
 
   const [error, setError] = useState<string>("")
   const inputRef = useRef<HTMLInputElement>(null!)
+  const [isLoading, setIsLoading] = useState(false)
   const { width } = useContext(Width)
   const navigate = useNavigate()
 
@@ -38,6 +40,7 @@ function Register() {
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError("")
     setRegisterData((prev) => {
       return {
         ...prev,
@@ -47,6 +50,7 @@ function Register() {
   }
 
   const handleRegister = async (e: React.FormEvent<HTMLButtonElement>) => {
+    setIsLoading(true)
     e.preventDefault()
     const { email, password, repeatPassword } = registerData
 
@@ -73,22 +77,21 @@ function Register() {
     }
 
     const res = await fetch(`${getPort()}/api/auth/register`, {
-        method: 'POST',
-        headers:{
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(registerData)
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(registerData),
     })
 
-    if(res.status === 401) {
-        return setError("Invalid password")
+    setIsLoading(false)
+    if (res.status === 401) {
+      return setError("Invalid password")
     } else if (res.status === 403) {
-        return setError("Email is already registered")
+      return setError("Email is already registered")
     }
-
     await res.json()
-    navigate('/login')
-
+    navigate("/login")
   }
 
   return (
@@ -140,7 +143,13 @@ function Register() {
             </span>
           )}
         </div>
-        <button onClick={handleRegister} onKeyDown={(e) => e.key === 'Enter' && handleRegister}>Create an account</button>
+        <button
+          onClick={handleRegister}
+          onKeyDown={(e) => e.key === "Enter" && handleRegister}
+          disabled={isLoading}
+        >
+          {isLoading ? "Loading..." : "Create an account"}
+        </button>
         <span>
           Already have an account ? <Link to="/login">Login</Link>
         </span>

@@ -3,20 +3,16 @@ import arrowDowIc from '../../assets/icon-arrow-down.svg'
 import arrowRightIc from '../../assets/icon-arrow-right.svg'
 import plusIcon from '../../assets/icon-plus.svg'
 import Dot from '../dot/Dot'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { InvoiceType } from '../../types/invoiceType'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { getStatusStyle } from '../../util'
 import emptyImage from '../../assets/illustration-empty.svg'
 import AddInvoice from '../addInvoice/AddInvoice'
 import { Theme } from '../context/ThemeContext'
 import { Width } from '../context/WidthContext'
 import useToggle from '../hooks/useToggle'
-
-type InvoicesProp = {
-    data: InvoiceType[],
-    addInvoice: (data: InvoiceType, status: string) => void
-}
+import { getPort } from '../../util'
 
 interface StatusState {
     draft: boolean,
@@ -24,11 +20,13 @@ interface StatusState {
     paid: boolean
 }
 
-const Invoices = ({ data, addInvoice }: InvoicesProp) => {
+function Invoices() {
     const {theme} = useContext(Theme)
     const {width} = useContext(Width)
     const location = useLocation().state
+    const navigate = useNavigate()
     const [showFilterModal, setShowFilterModal] = useToggle(false)
+    const [allInvoice, setAllInvoice] = useState<InvoiceType[]>([])
     const [status, setStatus] = useState<StatusState>(location ? location :{
         draft: false,
         pending: false,
@@ -36,8 +34,30 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     })
     const [showCreate, toggleShowCreate] = useToggle(false)
     
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${getPort()}/api/invoice`, {
+                  credentials: "include",
+                })
 
-    const invoiceDocu = data.filter(inv => {
+                if(res.status === 403) {
+                   return navigate('/register')
+                } else if(res.status === 400) {
+                    return navigate('/')
+                }
+                const invoices: InvoiceType[] = await res.json()
+                setAllInvoice(invoices)
+              } catch (err) {
+                console.error(err)
+              }
+        }
+
+        fetchData()
+    }, [])
+
+
+    const invoiceDocu = allInvoice.filter(inv => {
         if (status.draft || status.paid || status.pending) {
             if (status.draft && inv.status === 'draft') {
                 return true
@@ -67,6 +87,11 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
         return num
     }
 
+    const applyChanges = (newData: InvoiceType) => {
+        setAllInvoice(prev => [...prev, newData])
+    }
+
+   
     const invoicesEl = invoiceDocu.map(invoice => {
         return (
             <div key={invoice.id} className={`invoice-hero invoice-hero-${theme}`}>
@@ -173,7 +198,7 @@ const Invoices = ({ data, addInvoice }: InvoicesProp) => {
     
     return (
         <main className='main-container padding-lr'>
-            {<AddInvoice show={showCreate} toggleShow={toggleShowCreate} addInvoice={addInvoice} />}
+            {<AddInvoice show={showCreate} toggleShow={toggleShowCreate} applyChangesToHome={applyChanges} />}
             <section className='first-row'>
                 <div className="left-col">
                     <h1>Invoices</h1>
