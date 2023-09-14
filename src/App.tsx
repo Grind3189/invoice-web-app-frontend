@@ -1,10 +1,9 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useNavigate } from "react-router-dom"
 import { useContext, useEffect, useState } from "react"
 import Invoice from "./components/invoice/Invoice"
 import Invoices from "./components/invoices/Invoices"
 import { Theme } from "./components/context/ThemeContext"
 import Layout from "./components/layout/Layout"
-import Auth from "./components/auth/Auth"
 import Register from "./pages/register/Register"
 import Login from "./pages/login/Login"
 import { InvoiceType } from "./types/invoiceType"
@@ -13,7 +12,7 @@ import { getPort, getSixId } from "./util"
 function App() {
   const { theme } = useContext(Theme)
   const [invoiceData, setInvoiceData] = useState<InvoiceType[] | []>([])
-
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,7 +20,7 @@ function App() {
           credentials: "include",
         })
         if(!res.ok) {
-          return 
+           navigate('/register')
         }
         const invoices: InvoiceType[] = await res.json()
         setInvoiceData(invoices)
@@ -81,15 +80,12 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Layout />}>
-        <Route element={<Auth />}>
           <Route
             index
             element={
               <Invoices data={invoiceData} addInvoice={handleAddInvoice} />
             }
           />
-        </Route>
-        <Route element={<Auth />}>
           <Route
             path=":invoiceId"
             element={
@@ -100,7 +96,6 @@ function App() {
               />
             }
           />
-        </Route>
       </Route>
     </Routes>
   )
