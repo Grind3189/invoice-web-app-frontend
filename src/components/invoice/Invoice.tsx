@@ -13,11 +13,13 @@ import useToggle from "../hooks/useToggle"
 import ActionBtnContainer from "../../components/buttons/btnContainer/ActionBtnContainer"
 import Back from "../buttons/back/Back"
 import EditInvoice from "../editInvoice/EditInvoice"
+import { Auth } from "../context/AuthContext"
 
 const Invoice = () => {
   const navigate = useNavigate()
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
+  const {changeAuth} = useContext(Auth)
   const [showEdit, toggleShowEdit] = useToggle(false)
   const [showDelete, toggleShowDelete] = useToggle(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -38,10 +40,11 @@ const Invoice = () => {
           credentials: "include",
         })
         if (res.status === 403) {
-          return navigate("/login")
+          return changeAuth(false)
         } else if (res.status === 404) {
           return navigate("/", { state: location })
         }
+        changeAuth(true)
         const result = await res.json()
         setInvoice(result)
         setIsLoading(false)
@@ -65,8 +68,9 @@ const Invoice = () => {
         return navigate("/")
       }
       if (res.status === 403) {
-        return navigate("/login")
+        return changeAuth(false)
       }
+      changeAuth(true)
       const newData = { ...invoice, status: "paid" }
       setInvoice(newData)
     } catch (err) {
@@ -81,8 +85,9 @@ const Invoice = () => {
     })
 
     if (res.status === 403) {
-      return navigate("/login")
+      return changeAuth(false)
     }
+    changeAuth(true)
     navigate("/", { state: location })
   }
 

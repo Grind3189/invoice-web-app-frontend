@@ -13,6 +13,7 @@ import { Theme } from '../context/ThemeContext'
 import { Width } from '../context/WidthContext'
 import useToggle from '../hooks/useToggle'
 import { getPort } from '../../util'
+import { Auth } from '../context/AuthContext'
 
 interface StatusState {
     draft: boolean,
@@ -23,6 +24,7 @@ interface StatusState {
 function Invoices() {
     const {theme} = useContext(Theme)
     const {width} = useContext(Width)
+    const {changeAuth} = useContext(Auth)
     const location = useLocation().state
     const navigate = useNavigate()
     const [showFilterModal, setShowFilterModal] = useToggle(false)
@@ -42,10 +44,11 @@ function Invoices() {
                 })
 
                 if(res.status === 403) {
-                   return navigate('/register')
+                   return changeAuth(false)
                 } else if(res.status === 400) {
                     return navigate('/')
                 }
+                changeAuth(true)
                 const invoices: InvoiceType[] = await res.json()
                 setAllInvoice(invoices)
               } catch (err) {

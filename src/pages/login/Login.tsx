@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useContext } from "react"
 import { Width } from "../../components/context/WidthContext"
 import "./login.scss"
 import { getPort } from "../../util"
+import { Auth } from "../../components/context/AuthContext"
 
 interface LoginData {
   email: string
@@ -29,7 +30,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const { width } = useContext(Width)
   const navigate = useNavigate()
-
+  const {changeAuth} = useContext(Auth)
   useEffect(() => {
     inputRef.current.focus()
   }, [])
@@ -81,7 +82,7 @@ function Login() {
     } else if (res.status === 403) {
       return setError("Email is not registered")
     }
-
+    changeAuth(true)
     await res.json()
     navigate("/")
   }

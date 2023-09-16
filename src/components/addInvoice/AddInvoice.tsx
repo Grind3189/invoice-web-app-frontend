@@ -22,6 +22,7 @@ import {
   getPort,
 } from "../../util"
 import { useNavigate } from "react-router-dom"
+import { Auth } from "../context/AuthContext"
 
 interface AddInvoiceProp {
   show: boolean
@@ -66,6 +67,7 @@ const AddInvoice = ({
 }: AddInvoiceProp) => {
   const { theme } = useContext(Theme)
   const { width } = useContext(Width)
+  const {changeAuth} = useContext(Auth)
   const [showPaymentTerms, togglePaymentTerms] = useToggle(false)
   const navigate = useNavigate()
   const [hasError, setHasError] = useState<boolean>(false)
@@ -318,10 +320,11 @@ const AddInvoice = ({
       })
       setIsLoading({ send: false, draft: false })
       if (res.status === 403) {
-        return navigate("/register")
+        return changeAuth(false)
       } else if (res.status === 400) {
         return navigate("/")
       }
+      changeAuth(true)
       const newInvoice = await res.json()
       applyChangesToHome(newInvoice)
       toggleShow()
